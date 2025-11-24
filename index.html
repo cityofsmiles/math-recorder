@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Collaborative Record Sheet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Real-time collaborative math class records">
+  <meta name="theme-color" content="#4285f4">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 10px; font-size: 16px; }
+    h2 { margin-bottom: 10px; text-align: center; }
+    
+    /* Login Screen Styles */
+    .login-container {
+      max-width: 450px;
+      margin: 80px auto;
+      padding: 35px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .login-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .login-form select,
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .login-form button:hover {
+      opacity: 0.9;
+    }
+    .login-info {
+      background: #f0f7ff;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    .hidden {
+      display: none !important;
+    }
+    
+    /* User Info Banner */
+    .user-banner {
+      background: #f0f7ff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid #667eea;
+    }
+    .user-banner .user-info {
+      font-weight: bold;
+      color: #333;
+    }
+    .user-banner button {
+      padding: 6px 16px;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .collaboration-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .collaboration-banner .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sync-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .info-boxes { margin-bottom: 20px; }
+    .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; }
+    .info-boxes input { margin-bottom: 12px; padding: 8px; width: 95%; max-width: 400px; font-size: 16px; }
+    table { 
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 800px;
+    }
+    th, td { 
+      border: 1px solid #ccc;
+      min-width: 60px;
+      padding: 0;
+    }
+    th { 
+      background: #f0f0f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 4px;
+    }
+    td {
+      background: #fff;
+    }
+    th:nth-child(1), td:nth-child(1) {
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: 5;
+    }
+    th:nth-child(2), td:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      background: #fff;
+      z-index: 5;
+    }
+    th:nth-child(1) {
+      background: #f0f0f0;
+      z-index: 15;
+    }
+    th:nth-child(2) {
+      background: #f0f0f0;
+      z-index: 15;
+    }
+    input.cell { 
+      width: 100%;
+      border: none;
+      padding: 4px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: background 0.2s;
+    }
+    input.cell:focus { outline: 2px solid dodgerblue; background: #eef6ff; }
+    input.cell[readonly] { background: #f3f3f3; color: #555; cursor: default; }
+    input.cell.being-edited { background: #fff3cd; }
+    button { margin-top: 10px; margin-right: 10px; padding: 12px 20px; font-size: 16px; cursor: pointer; }
+    #status {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 15px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease-out;
+      z-index: 999;
+    }
+    .table-section { margin-bottom: 30px; }
+    .table-wrapper { overflow-x: auto; }
+    .button-container { margin-top: 10px; }
+    .sync-warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-container">
+    <h2>🔐 Group Record Login</h2>
+    <div class="login-info">
+      <strong>Instructions:</strong><br>
+      1. Select your class<br>
+      2. Enter your username and password<br>
+      3. Click Login
+    </div>
+    <form class="login-form" onsubmit="return false;">
+      <select id="loginClass" required>
+        <option value="">-- Select Your Class --</option>
+        <option value="class1">Class 1</option>
+        <option value="class2">Class 2</option>
+        <option value="class3">Class 3</option>
+        <option value="class4">Class 4</option>
+        <option value="class5">Class 5</option>
+        <option value="class6">Class 6</option>
+      </select>
+      <input type="text" id="loginUsername" placeholder="Username (e.g., leader1)" autocomplete="username" required>
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" required>
+      <button type="button" onclick="handleLogin()">Login</button>
+      <div id="loginError" style="color: #ef4444; font-size: 14px; margin-top: -10px;"></div>
+    </form>
+  </div>
+
+  <!-- Main App (hidden until login) -->
+  <div id="mainApp" class="hidden">
+    <h2>📊 Collaborative Record Sheet in Math</h2>
+
+    <div class="user-banner">
+      <div class="user-info">
+        <span id="userDisplay"></span>
+      </div>
+      <button onclick="handleLogout()">Logout</button>
+    </div>
+
+    <div class="collaboration-banner">
+      <div class="status">
+        <div class="sync-indicator"></div>
+        <span id="syncStatus">Real-time sync enabled</span>
+      </div>
+      <div id="lastSync">Auto-saving...</div>
+    </div>
+
+    <div class="sync-warning">
+      <strong>⚠️ Collaborative Mode:</strong> Your changes are visible to your teacher. Data syncs every 2 seconds.
+    </div>
+
+    <div class="info-boxes">
+      <label for="leaderName">Leader's Name:</label>
+      <input type="text" id="leaderName">
+
+      <label for="section">Section:</label>
+      <input type="text" id="section">
+
+      <label for="groupNumber">Group Number:</label>
+      <input type="text" id="groupNumber">
+    </div>
+
+    <!-- Table 1: Activity -->
+    <div class="table-section">
+      <h3>📝 Activity</h3>
+      <div class="table-wrapper">
+        <table id="table1">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="table1-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 2: Practice -->
+    <div class="table-section">
+      <h3>✏️ Practice</h3>
+      <div class="table-wrapper">
+        <table id="table2">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="table2-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 3: QRLS -->
+    <div class="table-section">
+      <h3>📚 Quiz, Recitation, Lessons, Summative</h3>
+      <div class="table-wrapper">
+        <table id="table3">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+              <th>Quiz Total</th>
+              <th>Recitation</th>
+              <th>Lessons</th>
+              <th>Summative</th>
+            </tr>
+          </thead>
+          <tbody id="table3-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 4: Flashcards -->
+    <div class="table-section">
+      <h3>🎴 Flashcards</h3>
+      <div class="table-wrapper">
+        <table id="table4">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+              <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+              <th>11</th><th>12</th><th>13</th><th>14</th><th>15</th>
+              <th>16</th><th>17</th><th>18</th><th>19</th><th>20</th>
+              <th>21</th><th>22</th><th>23</th><th>24</th><th>25</th>
+              <th>26</th><th>27</th><th>28</th><th>29</th><th>30</th>
+              <th>31</th><th>32</th><th>33</th><th>34</th><th>35</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="table4-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Table 5: Summary -->
+    <div class="table-section">
+      <h3>📊 Summary</h3>
+      <div class="table-wrapper">
+        <table id="table5">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Activity</th>
+              <th>Practice</th>
+              <th>Quiz</th>
+              <th>Recitation</th>
+              <th>Lessons</th>
+              <th>Summative</th>
+              <th>Flashcards</th>
+            </tr>
+          </thead>
+          <tbody id="table5-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <button id="copyBtn">📋 Copy CSV</button>
+    <button id="resetBtn" style="background: #ef4444; color: white;">🔄 Reset All Data</button>
+    
+    <div id="status"></div>
+  </div>
+
+  <script>
+    // ===== AUTHENTICATION SETUP =====
+    // Define your users here - organized by class
+    const USERS = {
+      // Teacher account - can access any class/group
+      teacher: { 
+        password: 'teacherpass', 
+        role: 'teacher', 
+        displayName: 'Teacher',
+        allowedClasses: ['class1', 'class2', 'class3', 'class4', 'class5', 'class6']
+      },
+      
+      // Group Leaders - username format: leader1, leader2, etc.
+      // Same usernames work across all classes (password can be same or different)
+      leader1: { 
+        password: 'pass1', 
+        role: 'leader', 
+        displayName: 'Group 1 Leader',
+        groupKey: 'group1'
+      },
+      leader2: { 
+        password: 'pass2', 
+        role: 'leader', 
+        displayName: 'Group 2 Leader',
+        groupKey: 'group2'
+      },
+      leader3: { 
+        password: 'pass3', 
+        role: 'leader', 
+        displayName: 'Group 3 Leader',
+        groupKey: 'group3'
+      },
+      leader4: { 
+        password: 'pass4', 
+        role: 'leader', 
+        displayName: 'Group 4 Leader',
+        groupKey: 'group4'
+      },
+      leader5: { 
+        password: 'pass5', 
+        role: 'leader', 
+        displayName: 'Group 5 Leader',
+        groupKey: 'group5'
+      },
+    };
+
+    // Global state
+    let currentUser = null;
+    let currentClass = null;
+    let STORAGE_KEY = null;
+
+    function handleLogin() {
+      const classSelection = document.getElementById('loginClass').value;
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const errorDiv = document.getElementById('loginError');
+
+      if (!classSelection) {
+        errorDiv.textContent = 'Please select a class';
+        return;
+      }
+
+      if (!username || !password) {
+        errorDiv.textContent = 'Please enter both username and password';
+        return;
+      }
+
+      const user = USERS[username];
+      if (!user || user.password !== password) {
+        errorDiv.textContent = 'Invalid username or password';
+        return;
+      }
+
+      // Check if teacher has access to selected class
+      if (user.role === 'teacher' && !user.allowedClasses.includes(classSelection)) {
+        errorDiv.textContent = 'You do not have access to this class';
+        return;
+      }
+
+      // Successful login
+      currentUser = username;
+      currentClass = classSelection;
+      
+      // Set storage key based on class and user
+      if (user.role === 'teacher') {
+        STORAGE_KEY = `math-record-${classSelection}-teacher-view`;
+      } else {
+        STORAGE_KEY = `math-record-${classSelection}-${user.groupKey}`;
+      }
+
+      // Update UI
+      const className = classSelection.replace('class', 'Class ');
+      document.getElementById('userDisplay').textContent = 
+        `${className} | ${user.displayName}`;
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('mainApp').classList.remove('hidden');
+
+      // Initialize the app
+      initialLoad();
+      
+      errorDiv.textContent = '';
+    }
+
+    function handleLogout() {
+      if (confirm('Are you sure you want to logout?')) {
+        currentUser = null;
+        currentClass = null;
+        STORAGE_KEY = null;
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('loginClass').value = '';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+      }
+    }
+
+    // Allow Enter key to submit login
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginInputs = document.querySelectorAll('#loginClass, #loginUsername, #loginPassword');
+      loginInputs.forEach(input => {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handleLogin();
+          }
+        });
+      });
+    });
+
+    // ===== REST OF THE CODE =====
+    const ROW_COUNT = 11;
+    const SYNC_INTERVAL = 2000;
+
+    const status = document.getElementById("status");
+    const syncStatus = document.getElementById("syncStatus");
+    const lastSync = document.getElementById("lastSync");
+    const leader = document.getElementById("leaderName");
+    const section = document.getElementById("section");
+    const group = document.getElementById("groupNumber");
+
+    const table1Tbody = document.getElementById("table1-tbody");
+    const table2Tbody = document.getElementById("table2-tbody");
+    const table3Tbody = document.getElementById("table3-tbody");
+    const table4Tbody = document.getElementById("table4-tbody");
+    const table5Tbody = document.getElementById("table5-tbody");
+
+    const table1HeadInputs = document.querySelectorAll("#table1 thead input.cell");
+    const table2HeadInputs = document.querySelectorAll("#table2 thead input.cell");
+    const table3HeadInputs = document.querySelectorAll("#table3 thead input.cell");
+
+    let isSyncing = false;
+    let hasLocalChanges = false;
+
+    function renderRow(tbodyElement, columnCount, data = [], readOnlyColumns = []) {
+      const tr = document.createElement("tr");
+      for (let i = 0; i < columnCount; i++) {
+        const td = document.createElement("td");
+        const input = document.createElement("input");
+        input.className = "cell";
+        input.value = data[i] || "";
+        if (readOnlyColumns.includes(i)) input.readOnly = true;
+        td.appendChild(input);
+        tr.appendChild(td);
+      }
+      tbodyElement.appendChild(tr);
+    }
+
+    async function loadFromCloud() {
+      try {
+        const result = await window.storage.get(STORAGE_KEY, true);
+        if (result && result.value) {
+          const saved = JSON.parse(result.value);
+          applyData(saved);
+          updateLastSyncTime();
+          return true;
+        }
+      } catch (error) {
+        console.log("No existing data found, starting fresh");
+      }
+      return false;
+    }
+
+    function applyData(saved) {
+      leader.value = saved.leader || "";
+      section.value = saved.section || "";
+      group.value = saved.group || "";
+
+      [table1Tbody, table2Tbody, table3Tbody, table4Tbody, table5Tbody].forEach(tbody => {
+        tbody.innerHTML = "";
+      });
+
+      if(saved.table1) saved.table1.forEach(r=>renderRow(table1Tbody,28,r,[27]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table1Tbody,28,[],[27]);
+      if(saved.table1Headers) table1HeadInputs.forEach((input,i)=>input.value=saved.table1Headers[i]||"");
+
+      if(saved.table2) saved.table2.forEach(r=>renderRow(table2Tbody,28,r,[27]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table2Tbody,28,[],[27]);
+      if(saved.table2Headers) table2HeadInputs.forEach((input,i)=>input.value=saved.table2Headers[i]||"");
+
+      if(saved.table3) saved.table3.forEach(r=>renderRow(table3Tbody,16,r,[12]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table3Tbody,16,[...Array(16)].map(()=>""),[12]);
+      if(saved.table3Headers) table3HeadInputs.forEach((input,i)=>input.value=saved.table3Headers[i]||"");
+
+      if(saved.table4) saved.table4.forEach(r=>renderRow(table4Tbody,38,r,[37]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table4Tbody,38,[...Array(38)].map(()=>""),[37]);
+
+      if(saved.table5) saved.table5.forEach(r=>renderRow(table5Tbody,9,r,[0,1,2,3,4,5,6,7,8]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table5Tbody,9,[],[0,1,2,3,4,5,6,7,8]);
+
+      setupFormulas();
+      attachInputListeners();
+    }
+
+    async function initialLoad() {
+      const hasData = await loadFromCloud();
+      if (!hasData) {
+        for(let i=0;i<ROW_COUNT;i++) {
+          renderRow(table1Tbody,28,[],[27]);
+          renderRow(table2Tbody,28,[],[27]);
+          renderRow(table3Tbody,16,[...Array(16)].map(()=>""),[12]);
+          renderRow(table4Tbody,38,[...Array(38)].map(()=>""),[37]);
+          renderRow(table5Tbody,9,[],[0,1,2,3,4,5,6,7,8]);
+        }
+        setupFormulas();
+        attachInputListeners();
+      }
+    }
+
+    function setupFormulas() {
+      const t1Rows = table1Tbody.querySelectorAll("tr");
+      const t2Rows = table2Tbody.querySelectorAll("tr");
+      const t3Rows = table3Tbody.querySelectorAll("tr");
+      const t4Rows = table4Tbody.querySelectorAll("tr");
+      const t5Rows = table5Tbody.querySelectorAll("tr");
+
+      t1Rows.forEach((row,i)=>{
+        const t1Inputs = row.querySelectorAll("input.cell");
+        const t2Inputs = t2Rows[i].querySelectorAll("input.cell");
+        const t3Inputs = t3Rows[i].querySelectorAll("input.cell");
+        const t4Inputs = t4Rows[i].querySelectorAll("input.cell");
+        const t5Inputs = t5Rows[i].querySelectorAll("input.cell");
+
+        const recalc = ()=>{
+          let actSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t1Inputs[j].value);if(!isNaN(val)) actSum+=val;}
+          t1Inputs[27].value=actSum; t5Inputs[2].value=actSum;
+
+          t2Inputs[0].value=t1Inputs[0].value; t2Inputs[1].value=t1Inputs[1].value;
+          t3Inputs[0].value=t1Inputs[0].value; t3Inputs[1].value=t1Inputs[1].value;
+          t4Inputs[0].value=t1Inputs[0].value; t4Inputs[1].value=t1Inputs[1].value;
+          t5Inputs[0].value=t1Inputs[0].value; t5Inputs[1].value=t1Inputs[1].value;
+
+          let prSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t2Inputs[j].value);if(!isNaN(val)) prSum+=val;}
+          t2Inputs[27].value=prSum; t5Inputs[3].value=prSum;
+
+          let quizSum=0; for(let j=2;j<=11;j++){const val=parseFloat(t3Inputs[j].value);if(!isNaN(val)) quizSum+=val;}
+          t3Inputs[12].value=quizSum; t5Inputs[4].value=quizSum;
+
+          t5Inputs[5].value=t3Inputs[13].value;
+          t5Inputs[6].value=t3Inputs[14].value;
+          t5Inputs[7].value=t3Inputs[15].value;
+
+          let fcSum=0; for(let j=2;j<=36;j++){const val=parseFloat(t4Inputs[j].value);if(!isNaN(val)) fcSum+=val;}
+          t4Inputs[37].value=fcSum; t5Inputs[8].value=fcSum;
+        };
+
+        t1Inputs.forEach(input=>input.addEventListener("input", recalc));
+        t2Inputs.forEach((input,j)=>{if(j<27) input.addEventListener("input", recalc)});
+        t3Inputs.forEach((input,j)=>{if(j<12 || j>=13) input.addEventListener("input", recalc)});
+        t4Inputs.forEach((input,j)=>{if(j<37) input.addEventListener("input", recalc)});
+      });
+    }
+
+    function attachInputListeners() {
+      const allInputs = document.querySelectorAll("input");
+      allInputs.forEach(input => {
+        input.addEventListener("input", () => {
+          hasLocalChanges = true;
+        });
+      });
+    }
+
+    async function saveToCloud() {
+      if (!hasLocalChanges || isSyncing) return;
+
+      isSyncing = true;
+      syncStatus.textContent = "Syncing...";
+
+      const getRows = tbody => [...tbody.querySelectorAll("tr")].map(tr =>
+        [...tr.querySelectorAll("input.cell")].map(x=>x.value.replace(/,/g," "))
+      );
+
+      const data = {
+        leader: leader.value.trim(),
+        section: section.value.trim(),
+        group: group.value.trim(),
+        table1: getRows(table1Tbody),
+        table1Headers: [...table1HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table2: getRows(table2Tbody),
+        table2Headers: [...table2HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table3: getRows(table3Tbody),
+        table3Headers: [...table3HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table4: getRows(table4Tbody),
+        table5: getRows(table5Tbody),
+        lastModified: new Date().toISOString()
+      };
+
+      try {
+        await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
+        hasLocalChanges = false;
+        syncStatus.textContent = "✓ Synced";
+        updateLastSyncTime();
+        setTimeout(() => {
+          syncStatus.textContent = "Real-time sync enabled";
+        }, 2000);
+      } catch (error) {
+        console.error("Sync failed:", error);
+        syncStatus.textContent = "⚠️ Sync failed";
+        showStatus("Sync failed - will retry");
+      } finally {
+        isSyncing = false;
+      }
+    }
+
+    async function syncFromCloud() {
+      if (hasLocalChanges || isSyncing) return;
+      
+      try {
+        const result = await window.storage.get(STORAGE_KEY, true);
+        if (result && result.value) {
+          const saved = JSON.parse(result.value);
+          applyData(saved);
+        }
+      } catch (error) {
+        console.log("Sync check failed:", error);
+      }
+    }
+
+    function updateLastSyncTime() {
+      const now = new Date();
+      lastSync.textContent = `Last sync: ${now.toLocaleTimeString()}`;
+    }
+
+    function showStatus(msg) { 
+      status.textContent=msg; 
+      status.style.opacity="1"; 
+      setTimeout(()=>{status.style.opacity="0";},1500); 
+    }
+
+    function copyCSV(){
+      const headerInfo=`Leader: ${leader.value}\nSection: ${section.value}\nGroup: ${group.value}\nClass: ${currentClass.replace('class', 'Class ')}\n\n`;
+      
+      const headers = "Last Name,First Name,Activity,Practice,Quiz,Recitation,Lessons,Summative,Flashcards\n";
+      
+      const rows = [...table5Tbody.querySelectorAll("tr")]
+        .map(tr => {
+          const inputs = [...tr.querySelectorAll("input.cell")];
+          return inputs.map(x => `"${x.value.replace(/"/g,'""')}"`).join(",");
+        })
+        .filter(row => {
+          const values = row.split(',').slice(0, 2).map(v => v.replace(/"/g, '').trim());
+          return values[0] !== '' || values[1] !== '';
+        })
+        .join("\n");
+
+      const text = headerInfo + headers + rows;
+
+      navigator.clipboard.writeText(text)
+        .then(()=>showStatus("CSV copied to clipboard"))
+        .catch(()=>{
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          showStatus("CSV copied to clipboard");
+        });
+    }
+
+    async function resetAllData() {
+      const user = USERS[currentUser];
+      let confirmMsg = "⚠️ WARNING: This will permanently delete ALL data for this group!\n\nAre you absolutely sure? This cannot be undone!";
+      
+      if (user.role === 'teacher') {
+        confirmMsg = "⚠️ TEACHER WARNING: This will delete data for THIS GROUP only.\n\nAre you sure?";
+      }
+      
+      if (confirm(confirmMsg)) {
+        if (confirm("Final confirmation: Delete all data?")) {
+          try {
+            await window.storage.delete(STORAGE_KEY, true);
+            location.reload();
+          } catch (error) {
+            showStatus("Reset failed");
+          }
+        }
+      }
+    }
+
+    document.getElementById("copyBtn").onclick = copyCSV;
+    document.getElementById("resetBtn").onclick = resetAllData;
+
+    setInterval(() => {
+      if (currentUser && STORAGE_KEY) {
+        saveToCloud();
+      }
+    }, SYNC_INTERVAL);
+
+    setInterval(() => {
+      if (currentUser && STORAGE_KEY) {
+        syncFromCloud();
+      }
+    }, 3000);
+
+    window.addEventListener('beforeunload', () => {
+      if (hasLocalChanges && currentUser && STORAGE_KEY) {
+        saveToCloud();
+      }
+    });
+  </script>
+</body>
+</html>
