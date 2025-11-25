@@ -223,69 +223,7 @@
   </style>
 </head>
 <body>
-  <!-- SETUP INSTRUCTIONS (Remove after completing setup) -->
-  <div id="setupInstructions" class="setup-box">
-    <h2>🚀 Quick Setup (5 minutes)</h2>
-    
-    <div class="important">
-      <strong>✋ Before using this app:</strong> You need to create a simple Google Apps Script to connect this app to your Google Sheet.
-    </div>
-
-    <ol>
-      <li>Open your Google Sheet: <code>1zYSuZSarlGsE_Yw9PHXIO_6d2urxrJQGGH9-hG50Ouw</code></li>
-      
-      <li>Click <strong>Extensions</strong> → <strong>Apps Script</strong></li>
-      
-      <li>Delete any existing code and paste this script:
-        <textarea readonly onclick="this.select()" style="width:100%; height:200px; margin:10px 0; font-family:monospace; font-size:12px; padding:10px;">
-function doPost(e) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const data = JSON.parse(e.postData.contents);
-  
-  if (data.action === 'save') {
-    let sheet = ss.getSheetByName(data.sheetName);
-    if (!sheet) {
-      sheet = ss.insertSheet(data.sheetName);
-    }
-    sheet.clear();
-    sheet.getRange(1, 1, data.values.length, data.values[0].length).setValues(data.values);
-    return ContentService.createTextOutput(JSON.stringify({success: true}));
-  }
-  
-  if (data.action === 'load') {
-    const sheet = ss.getSheetByName(data.sheetName);
-    if (!sheet) {
-      return ContentService.createTextOutput(JSON.stringify({success: false, data: []}));
-    }
-    const values = sheet.getDataRange().getValues();
-    return ContentService.createTextOutput(JSON.stringify({success: true, data: values}));
-  }
-}
-
-function doGet(e) {
-  return doPost(e);
-}</textarea>
-      </li>
-      
-      <li>Click <strong>Deploy</strong> → <strong>New deployment</strong></li>
-      
-      <li>Click gear icon (⚙️) → Select <strong>"Web app"</strong></li>
-      
-      <li>Settings:
-        <ul>
-          <li><strong>Execute as:</strong> Me</li>
-          <li><strong>Who has access:</strong> Anyone</li>
-        </ul>
-      </li>
-      
-      <li>Click <strong>Deploy</strong> → Copy the <strong>Web app URL</strong></li>
-      
-      <li>In this HTML file, find line 330 and paste your URL in <code>SCRIPT_URL</code></li>
-      
-      <li><strong>Delete this setup box</strong> and reload the page!</li>
-    </ol>
-  </div>
-
+ 
   <!-- Login Screen -->
   <div id="loginScreen" class="login-container hidden">
     <h2>🔐 Group Record Login</h2>
