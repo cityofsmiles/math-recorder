@@ -26,6 +26,9 @@
       align-items: center;
       z-index: 9999;
     }
+    #loginOverlay.hidden { /* FIX: This new rule ensures display: none overrides display: flex when the class is present */
+      display: none;
+    }
     #loginBox {
       background: white;
       padding: 30px;
@@ -512,7 +515,6 @@
     if (sessionStorage.getItem(sessionKey) === 'authenticated') {
       loginOverlay.classList.add('hidden');
       mainContent.classList.remove('hidden');
-      initialLoad();
     }
     
     function checkPassword() {
@@ -526,7 +528,7 @@
       
       if (enteredPassword === correctPassword) {
         sessionStorage.setItem(sessionKey, 'authenticated');
-        loginOverlay.classList.add('hidden');
+        loginOverlay.classList.add('hidden'); // This adds the 'hidden' class
         mainContent.classList.remove('hidden');
         loginError.style.display = 'none';
         initialLoad();
@@ -730,7 +732,7 @@
         return; // Silently skip if no URL parameters
       }
 
-      if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx3MgS3mfEs4naEfVXUfjd7jsRljF6Oy6eIFp5V66e_sKVULy6_benmNhDywsB2SFFR/exec') {
+      if (GOOGLE_SCRIPT_URL === 'YOUR_SCRIPT_URL_HERE') {
         return; // Silently skip if not configured
       }
 
@@ -840,6 +842,8 @@
     }
 
     window.onbeforeunload = saveAll;
+
+    initialLoad();
   </script>
 </body>
 </html>
