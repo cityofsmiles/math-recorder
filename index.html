@@ -2,125 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Group Record Sheet - Google Sheets</title>
+  <title>Record Sheet in Math</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track math activities, practices, quizzes, and more">
+  <meta name="theme-color" content="#4285f4">
+  <link rel="manifest" href="#" id="manifest-placeholder">
+  <link rel="icon" type="image/png" href="#" id="icon-placeholder">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Math Records">
   <style>
-    body { 
-      font-family: Arial, sans-serif; 
-      margin: 0;
-      padding: 10px; 
-      font-size: 16px;
-      background: #f5f5f5;
-    }
-
+    body { font-family: Arial, sans-serif; margin: 10px; font-size: 16px; }
     h2 { margin-bottom: 10px; text-align: center; }
-    
-    .login-container {
-      max-width: 450px;
-      margin: 80px auto;
-      padding: 35px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    .login-container h2 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-    
-    .login-form select,
-    .login-form input {
+    .info-boxes { margin-bottom: 20px; }
+    .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; }
+    .info-boxes input { margin-bottom: 12px; padding: 8px; width: 95%; max-width: 400px; font-size: 16px; }
+    table { 
+      border-collapse: collapse;
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 16px;
+      min-width: 800px;
+    }
+    th, td { 
+      border: 1px solid #ccc;
+      min-width: 60px;
+      padding: 0;
+    }
+    th { 
+      background: #f0f0f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 4px;
+    }
+    td {
+      background: #fff;
+    }
+    th:nth-child(1), td:nth-child(1) {
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: 5;
+    }
+    th:nth-child(2), td:nth-child(2) {
+      position: sticky;
+      left: 60px;
+      background: #fff;
+      z-index: 5;
+    }
+    th:nth-child(1) {
+      background: #f0f0f0;
+      z-index: 15;
+    }
+    th:nth-child(2) {
+      background: #f0f0f0;
+      z-index: 15;
+    }
+    input.cell { 
+      width: 100%;
+      border: none;
+      padding: 4px;
+      font-size: 15px;
       box-sizing: border-box;
     }
-    
-    .login-form button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    
-    .login-form button:hover {
-      transform: translateY(-2px);
-    }
-    
-    .login-info {
-      background: #f0f7ff;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 20px;
-      border-left: 4px solid #667eea;
-    }
-    
-    .hidden { display: none !important; }
-    
-    .user-banner {
-      background: #f0f7ff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-left: 4px solid #667eea;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    .user-banner .user-info {
-      font-weight: bold;
-      color: #333;
-    }
-    
-    .user-banner button {
-      padding: 8px 16px;
-      font-size: 14px;
-      margin: 0;
-    }
-    
-    .collaboration-banner {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .sync-warning {
-      background: #dcfce7;
-      border-left: 4px solid #10b981;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-    }
-    
-    button { 
-      padding: 12px 20px; 
-      font-size: 16px; 
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      transition: transform 0.2s;
-    }
-    
-    button:hover {
-      transform: translateY(-2px);
-    }
-    
+    input.cell:focus { outline: 2px solid dodgerblue; background: #eef6ff; }
+    input.cell[readonly] { background: #f3f3f3; color: #555; cursor: default; }
+    button { margin-top: 10px; margin-right: 10px; padding: 12px 20px; font-size: 16px; cursor: pointer; }
     #status {
       position: fixed;
       bottom: 15px;
@@ -130,419 +76,623 @@
       color: #fff;
       padding: 8px 16px;
       border-radius: 6px;
+      font-size: 15px;
       opacity: 0;
-      transition: opacity 0.3s;
-      z-index: 999;
       pointer-events: none;
+      transition: opacity 0.15s ease-out;
+      z-index: 999;
     }
+    .table-section { margin-bottom: 30px; }
+    .table-wrapper { overflow-x: auto; }
+    .button-container { margin-top: 10px; }
     
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
+    #installPrompt {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #4285f4;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    #installPrompt button {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .info-boxes { margin-bottom: 20px; }
-    .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; color: #555; }
-    .info-boxes input { 
-      margin-bottom: 12px; 
-      padding: 10px; 
-      width: 100%; 
-      max-width: 400px; 
-      font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-    
-    .info-boxes input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    table { 
-      border-collapse: collapse;
-      width: 100%;
-      min-width: 800px;
-      font-size: 14px;
-    }
-    
-    th, td { 
-      border: 1px solid #ddd;
-      padding: 10px 8px;
-      min-width: 80px;
-    }
-    
-    th { 
-      background: #f8f9fa;
-      font-weight: 600;
-      color: #555;
-      text-align: left;
-    }
-    
-    input.cell { 
-      width: 100%;
+      color: #4285f4;
       border: none;
-      padding: 6px;
-      font-size: 14px;
-      box-sizing: border-box;
-      background: transparent;
-    }
-    
-    input.cell:focus { 
-      outline: 2px solid #667eea; 
-      background: #f0f7ff;
+      padding: 8px 16px;
+      margin: 5px 5px 0 0;
       border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
     }
-    
-    input.cell[readonly] { 
-      background: #f3f3f3; 
-      color: #888;
-      cursor: not-allowed;
-    }
-    
-    .table-section { 
-      margin-bottom: 30px;
-      overflow-x: auto;
-    }
-    
-    .table-section h3 {
-      margin-bottom: 12px;
-      color: #333;
-      font-size: 18px;
-    }
-    
-    .button-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    
-    @media (max-width: 768px) {
-      .container {
-        padding: 15px;
-      }
-      
-      .button-group button {
-        flex: 1;
-        min-width: 140px;
-      }
-      
-      table {
-        font-size: 12px;
-      }
-      
-      th, td {
-        padding: 6px 4px;
-      }
+    #installPrompt button:hover {
+      background: #f0f0f0;
     }
   </style>
 </head>
+
 <body>
-  <!-- Login Screen -->
-  <div id="loginScreen" class="login-container">
-    <h2>🔐 Group Record Login</h2>
-    <div class="login-info">
-      <strong>Instructions:</strong><br>
-      1. Select your class<br>
-      2. Enter your username and password<br>
-      3. Click Login
-    </div>
-    <form class="login-form" onsubmit="return false;">
-      <select id="loginClass" required>
-        <option value="">-- Select Your Class --</option>
-        <option value="class1">Class 1</option>
-        <option value="class2">Class 2</option>
-        <option value="class3">Class 3</option>
-        <option value="class4">Class 4</option>
-        <option value="class5">Class 5</option>
-        <option value="class6">Class 6</option>
-      </select>
-      <input type="text" id="loginUsername" placeholder="Username (e.g., leader1)" required autocomplete="username">
-      <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
-      <button type="button" onclick="handleLogin()">Login</button>
-      <div id="loginError" style="color: #ef4444; font-size: 14px; margin-top: 10px;"></div>
-    </form>
+  <h2>Record Sheet in Math</h2>
+
+  <div id="installPrompt">
+    <div style="margin-bottom: 10px;">Install this app for offline access!</div>
+    <button id="installBtn">Install</button>
+    <button id="dismissBtn">Dismiss</button>
   </div>
 
-  <!-- Main App -->
-  <div id="mainApp" class="hidden">
-    <div class="container">
-      <h2>📊 Collaborative Record Sheet</h2>
+  <div class="info-boxes">
+    <label for="leaderName">Leader's Name:</label>
+    <input type="text" id="leaderName">
 
-      <div class="user-banner">
-        <div class="user-info">
-          <span id="userDisplay"></span>
-        </div>
-        <button onclick="handleLogout()" style="background: #ef4444; color: white;">Logout</button>
-      </div>
+    <label for="section">Section:</label>
+    <input type="text" id="section">
 
-      <div class="collaboration-banner">
-        <div id="syncStatus">✓ Connected to Google Sheets</div>
-      </div>
+    <label for="groupNumber">Group Number:</label>
+    <input type="text" id="groupNumber">
+  </div>
 
-      <div class="sync-warning">
-        <strong>✓ Real-time sync enabled:</strong> Your changes are saved to Google Sheets. Click "Save" to push updates.
-      </div>
-
-      <div class="info-boxes">
-        <label for="leaderName">Leader's Name:</label>
-        <input type="text" id="leaderName" placeholder="Enter leader's full name">
-
-        <label for="section">Section:</label>
-        <input type="text" id="section" placeholder="Enter section">
-
-        <label for="groupNumber">Group Number:</label>
-        <input type="text" id="groupNumber" placeholder="Enter group number">
-      </div>
-
-      <!-- Summary Table -->
-      <div class="table-section">
-        <h3>📊 Student Summary</h3>
-        <table id="summaryTable">
-          <thead>
-            <tr>
-              <th>Last Name</th>
-              <th>First Name</th>
-              <th>Activity</th>
-              <th>Practice</th>
-              <th>Quiz</th>
-              <th>Recitation</th>
-              <th>Lessons</th>
-              <th>Summative</th>
-              <th>Flashcards</th>
-            </tr>
-          </thead>
-          <tbody id="summaryBody"></tbody>
-        </table>
-      </div>
-
-      <div class="button-group">
-        <button onclick="saveToSheets()" style="background: #10b981; color: white;">💾 Save to Google Sheets</button>
-        <button onclick="loadFromSheets()" style="background: #3b82f6; color: white;">🔄 Reload Data</button>
-      </div>
+  <!-- Table 1 section -->
+  <div class="table-section">
+    <div class="table-wrapper">
+      <table id="table1">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th>
+            <th>Activity</th>
+          </tr>
+        </thead>
+        <tbody id="table1-tbody"></tbody>
+      </table>
+    </div>
+    <div class="button-container">
+      <button id="saveBtnTable1">Save Activity</button>
+      <button id="clearBtnTable1">Clear Activity</button>
     </div>
   </div>
 
+  <!-- Table 2 section -->
+  <div class="table-section">
+    <div class="table-wrapper">
+      <table id="table2">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th>
+            <th>Practice</th>
+          </tr>
+        </thead>
+        <tbody id="table2-tbody"></tbody>
+      </table>
+    </div>
+    <div class="button-container">
+      <button id="saveBtnTable2">Save Practice</button>
+      <button id="clearBtnTable2">Clear Practice</button>
+    </div>
+  </div>
+
+  <!-- Table 3 section -->
+  <div class="table-section">
+    <div class="table-wrapper">
+      <table id="table3">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
+            <th>Quiz</th>
+            <th>Recitation</th>
+            <th>Lessons</th>
+            <th>Summative</th>
+          </tr>
+        </thead>
+        <tbody id="table3-tbody"></tbody>
+      </table>
+    </div>
+    <div class="button-container">
+      <button id="saveBtnTable3">Save QRLS</button>
+      <button id="clearBtnTable3">Clear QRLS</button>
+    </div>
+  </div>
+
+  <!-- Table 4 section -->
+  <div class="table-section">
+    <div class="table-wrapper">
+      <table id="table4">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th>
+            <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+            <th>11</th><th>12</th><th>13</th><th>14</th><th>15</th>
+            <th>16</th><th>17</th><th>18</th><th>19</th><th>20</th>
+            <th>21</th><th>22</th><th>23</th><th>24</th><th>25</th>
+            <th>26</th><th>27</th><th>28</th><th>29</th><th>30</th>
+            <th>31</th><th>32</th><th>33</th><th>34</th><th>35</th>
+            <th>Flashcards</th>
+          </tr>
+        </thead>
+        <tbody id="table4-tbody"></tbody>
+      </table>
+    </div>
+    <div class="button-container">
+      <button id="saveBtnTable4">Save Flashcards</button>
+      <button id="clearBtnTable4">Clear Flashcards</button>
+    </div>
+  </div>
+
+  <!-- Table 5 section -->
+  <div class="table-section">
+    <div class="table-wrapper">
+      <table id="table5">
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Activity</th>
+            <th>Practice</th>
+            <th>Quiz</th>
+            <th>Recitation</th>
+            <th>Lessons</th>
+            <th>Summative</th>
+            <th>Flashcards</th>
+          </tr>
+        </thead>
+        <tbody id="table5-tbody"></tbody>
+      </table>
+    </div>
+    <div class="button-container">
+      <button id="saveBtn">Save All</button>
+      <button id="clearAllBtn">Clear All</button>
+    </div>
+  </div>
+
+  <button id="copyBtn">Copy CSV</button>
+  <button id="syncBtn">Sync to Google Sheets</button>
   <div id="status"></div>
 
   <script>
-    // =================================================================
-    // 🔧 CONFIGURATION - PASTE YOUR APPS SCRIPT URL HERE
-    // =================================================================
-    const CONFIG = {
-      // Replace with your Apps Script Web App URL
-      SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzw8tUUmHUk_R3vd_MZdQXEIUH3hiMHl5RyTQP3bu74q2WjQSLg2-up2HtV7JjptsRU/exec'
-      // Example: 'https://script.google.com/macros/s/AKfycby.../exec'
+    // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3MgS3mfEs4naEfVXUfjd7jsRljF6Oy6eIFp5V66e_sKVULy6_benmNhDywsB2SFFR/exec';
+    // PWA Setup
+    const manifestData = {
+      name: "Math Record Sheet",
+      short_name: "Math Records",
+      description: "Track math activities, practices, quizzes, and more",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#ffffff",
+      theme_color: "#4285f4",
+      orientation: "any",
+      icons: [
+        {
+          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%234285f4' width='192' height='192' rx='24'/%3E%3Ctext x='96' y='130' font-size='100' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%3E",
+          sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        },
+        {
+          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%234285f4' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%3E",
+          sizes: "512x512",
+          type: "image/svg+xml",
+          purpose: "any maskable"
+        }
+      ]
     };
-    // =================================================================
 
-    const USERS = {
-      teacher: { password: 'teacherpass', role: 'teacher', displayName: 'Teacher' },
-      leader1: { password: 'pass1', role: 'leader', displayName: 'Group 1 Leader', groupKey: 'group1' },
-      leader2: { password: 'pass2', role: 'leader', displayName: 'Group 2 Leader', groupKey: 'group2' },
-      leader3: { password: 'pass3', role: 'leader', displayName: 'Group 3 Leader', groupKey: 'group3' },
-      leader4: { password: 'pass4', role: 'leader', displayName: 'Group 4 Leader', groupKey: 'group4' },
-      leader5: { password: 'pass5', role: 'leader', displayName: 'Group 5 Leader', groupKey: 'group5' },
-    };
+    const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    document.getElementById('manifest-placeholder').setAttribute('href', manifestURL);
+    document.getElementById('icon-placeholder').setAttribute('href', manifestData.icons[0].src);
 
-    let currentUser = null;
-    let currentClass = null;
-    let currentSheetName = '';
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'math-record-v1';
+        
+        self.addEventListener('install', (event) => {
+          self.skipWaiting();
+        });
+        
+        self.addEventListener('activate', (event) => {
+          event.waitUntil(clients.claim());
+        });
+        
+        self.addEventListener('fetch', (event) => {
+          event.respondWith(
+            caches.match(event.request).then((response) => {
+              return response || fetch(event.request).then((fetchResponse) => {
+                return caches.open(CACHE_NAME).then((cache) => {
+                  cache.put(event.request, fetchResponse.clone());
+                  return fetchResponse;
+                });
+              });
+            }).catch(() => {
+              return caches.match(event.request);
+            })
+          );
+        });
+      `;
+      
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swURL = URL.createObjectURL(swBlob);
+      
+      navigator.serviceWorker.register(swURL).then(() => {
+        console.log('Service Worker registered');
+      }).catch((error) => {
+        console.log('Service Worker registration failed:', error);
+      });
+    }
+
+    // Install Prompt
+    let deferredPrompt;
+    const installPrompt = document.getElementById('installPrompt');
+    const installBtn = document.getElementById('installBtn');
+    const dismissBtn = document.getElementById('dismissBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installPrompt.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installPrompt.style.display = 'none';
+      }
+    });
+
+    dismissBtn.addEventListener('click', () => {
+      installPrompt.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      installPrompt.style.display = 'none';
+      showStatus('App installed successfully!');
+    });
+
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const classParam = urlParams.get('class') || '';
+    const leaderParam = urlParams.get('leader') || '';
+    
+    // Create unique storage key based on URL parameters
+    const STORAGE_KEY = classParam && leaderParam 
+      ? `math_record_${classParam}_${leaderParam}_v14`
+      : "math_record_sheet_v14";
 
     const ROW_COUNT = 11;
 
-    function handleLogin() {
-      const classSelection = document.getElementById('loginClass').value;
-      const username = document.getElementById('loginUsername').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      const errorDiv = document.getElementById('loginError');
+    const status = document.getElementById("status");
+    const leader = document.getElementById("leaderName");
+    const section = document.getElementById("section");
+    const group = document.getElementById("groupNumber");
 
-      if (!classSelection || !username || !password) {
-        errorDiv.textContent = 'Please fill all fields';
-        return;
+    const table1Tbody = document.getElementById("table1-tbody");
+    const table2Tbody = document.getElementById("table2-tbody");
+    const table3Tbody = document.getElementById("table3-tbody");
+    const table4Tbody = document.getElementById("table4-tbody");
+    const table5Tbody = document.getElementById("table5-tbody");
+
+    const table1HeadInputs = document.querySelectorAll("#table1 thead input.cell");
+    const table2HeadInputs = document.querySelectorAll("#table2 thead input.cell");
+    const table3HeadInputs = document.querySelectorAll("#table3 thead input.cell");
+
+    function renderRow(tbodyElement, columnCount, data = [], readOnlyColumns = []) {
+      const tr = document.createElement("tr");
+      for (let i = 0; i < columnCount; i++) {
+        const td = document.createElement("td");
+        const input = document.createElement("input");
+        input.className = "cell";
+        input.value = data[i] || "";
+        if (readOnlyColumns.includes(i)) input.readOnly = true;
+        td.appendChild(input);
+        tr.appendChild(td);
       }
-
-      const user = USERS[username];
-      if (!user || user.password !== password) {
-        errorDiv.textContent = 'Invalid username or password';
-        return;
-      }
-
-      currentUser = username;
-      currentClass = classSelection;
-      currentSheetName = `${classSelection}_${user.groupKey || 'teacher'}`;
-
-      document.getElementById('userDisplay').textContent = 
-        `${classSelection.replace('class', 'Class ')} | ${user.displayName}`;
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainApp').classList.remove('hidden');
-
-      initializeTable();
-      loadFromSheets();
+      tbodyElement.appendChild(tr);
     }
 
-    function handleLogout() {
-      if (confirm('Are you sure you want to logout?')) {
-        location.reload();
+    function initialLoad() {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
+
+      // Auto-fill from URL parameters or use saved data
+      if (classParam && leaderParam && !saved.leader) {
+        leader.value = `Leader ${leaderParam}`;
+        section.value = `Class ${classParam}`;
+        group.value = leaderParam;
+      } else {
+        leader.value = saved.leader || "";
+        section.value = saved.section || "";
+        group.value = saved.group || "";
       }
+
+      if(saved.table1) saved.table1.forEach(r=>renderRow(table1Tbody,28,r,[27]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table1Tbody,28,[],[27]);
+      if(saved.table1Headers) table1HeadInputs.forEach((input,i)=>input.value=saved.table1Headers[i]||"");
+
+      if(saved.table2) saved.table2.forEach(r=>renderRow(table2Tbody,28,r,[27]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table2Tbody,28,[],[27]);
+      if(saved.table2Headers) table2HeadInputs.forEach((input,i)=>input.value=saved.table2Headers[i]||"");
+
+      if(saved.table3) saved.table3.forEach(r=>renderRow(table3Tbody,16,r,[12]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table3Tbody,16,[...Array(16)].map(()=>""),[12]);
+      if(saved.table3Headers) table3HeadInputs.forEach((input,i)=>input.value=saved.table3Headers[i]||"");
+
+      if(saved.table4) saved.table4.forEach(r=>renderRow(table4Tbody,38,r,[37]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table4Tbody,38,[...Array(38)].map(()=>""),[37]);
+
+      if(saved.table5) saved.table5.forEach(r=>renderRow(table5Tbody,9,r,[0,1,2,3,4,5,6,7,8]));
+      else for(let i=0;i<ROW_COUNT;i++) renderRow(table5Tbody,9,[],[0,1,2,3,4,5,6,7,8]);
+
+      setupFormulas();
     }
 
-    function initializeTable() {
-      const tbody = document.getElementById('summaryBody');
-      tbody.innerHTML = '';
-      for (let i = 0; i < ROW_COUNT; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < 9; j++) {
-          const td = document.createElement('td');
-          const input = document.createElement('input');
-          input.className = 'cell';
-          input.value = '';
-          input.placeholder = j < 2 ? (j === 0 ? 'Last Name' : 'First Name') : '';
-          td.appendChild(input);
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-      }
+    function setupFormulas() {
+      const t1Rows = table1Tbody.querySelectorAll("tr");
+      const t2Rows = table2Tbody.querySelectorAll("tr");
+      const t3Rows = table3Tbody.querySelectorAll("tr");
+      const t4Rows = table4Tbody.querySelectorAll("tr");
+      const t5Rows = table5Tbody.querySelectorAll("tr");
+
+      t1Rows.forEach((row,i)=>{
+        const t1Inputs = row.querySelectorAll("input.cell");
+        const t2Inputs = t2Rows[i].querySelectorAll("input.cell");
+        const t3Inputs = t3Rows[i].querySelectorAll("input.cell");
+        const t4Inputs = t4Rows[i].querySelectorAll("input.cell");
+        const t5Inputs = t5Rows[i].querySelectorAll("input.cell");
+
+        const recalc = ()=>{
+          let actSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t1Inputs[j].value);if(!isNaN(val)) actSum+=val;}
+          t1Inputs[27].value=actSum; t5Inputs[2].value=actSum;
+
+          t2Inputs[0].value=t1Inputs[0].value; t2Inputs[1].value=t1Inputs[1].value;
+          t3Inputs[0].value=t1Inputs[0].value; t3Inputs[1].value=t1Inputs[1].value;
+          t4Inputs[0].value=t1Inputs[0].value; t4Inputs[1].value=t1Inputs[1].value;
+          t5Inputs[0].value=t1Inputs[0].value; t5Inputs[1].value=t1Inputs[1].value;
+
+          let prSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t2Inputs[j].value);if(!isNaN(val)) prSum+=val;}
+          t2Inputs[27].value=prSum; t5Inputs[3].value=prSum;
+
+          let quizSum=0; for(let j=2;j<=11;j++){const val=parseFloat(t3Inputs[j].value);if(!isNaN(val)) quizSum+=val;}
+          t3Inputs[12].value=quizSum; t5Inputs[4].value=quizSum;
+
+          t5Inputs[5].value=t3Inputs[13].value;
+          t5Inputs[6].value=t3Inputs[14].value;
+          t5Inputs[7].value=t3Inputs[15].value;
+
+          let fcSum=0; for(let j=2;j<=36;j++){const val=parseFloat(t4Inputs[j].value);if(!isNaN(val)) fcSum+=val;}
+          t4Inputs[37].value=fcSum; t5Inputs[8].value=fcSum;
+        };
+
+        t1Inputs.forEach(input=>input.addEventListener("input", recalc));
+        t2Inputs.forEach((input,j)=>{if(j<27) input.addEventListener("input", recalc)});
+        t3Inputs.forEach((input,j)=>{if(j<12 || j>=13) input.addEventListener("input", recalc)});
+        t4Inputs.forEach((input,j)=>{if(j<37) input.addEventListener("input", recalc)});
+      });
     }
 
-    async function loadFromSheets() {
-      if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('YOUR_APPS_SCRIPT')) {
-        showStatus('⚠️ Please configure SCRIPT_URL in the code first!');
-        document.getElementById('syncStatus').textContent = '⚠️ Not configured - setup required';
-        return;
-      }
+    function saveAll() {
+      const getRows = tbody => [...tbody.querySelectorAll("tr")].map(tr =>
+        [...tr.querySelectorAll("input.cell")].map(x=>x.value.replace(/,/g," "))
+      );
 
-      showStatus('Loading...');
-      document.getElementById('syncStatus').textContent = '⏳ Loading...';
+      const data = {
+        leader: leader.value.trim(),
+        section: section.value.trim(),
+        group: group.value.trim(),
+        table1: getRows(table1Tbody),
+        table1Headers: [...table1HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table2: getRows(table2Tbody),
+        table2Headers: [...table2HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table3: getRows(table3Tbody),
+        table3Headers: [...table3HeadInputs].map(x=>x.value.replace(/,/g," ")),
+        table4: getRows(table4Tbody),
+        table5: getRows(table5Tbody)
+      };
 
-      try {
-        const response = await fetch(CONFIG.SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            action: 'load',
-            sheetName: currentSheetName
-          })
-        });
-
-        const result = await response.json();
-        
-        if (result.success && result.data && result.data.length > 3) {
-          // Populate info boxes
-          const header = result.data[0];
-          document.getElementById('leaderName').value = header[0]?.replace('Leader: ', '') || '';
-          document.getElementById('section').value = header[1]?.replace('Section: ', '') || '';
-          document.getElementById('groupNumber').value = header[2]?.replace('Group: ', '') || '';
-
-          // Populate table (skip first 3 rows: header info, blank, column headers)
-          populateTable(result.data.slice(3));
-          showStatus('✓ Data loaded successfully');
-          document.getElementById('syncStatus').textContent = '✓ Connected to Google Sheets';
-        } else {
-          showStatus('No existing data - starting fresh');
-          document.getElementById('syncStatus').textContent = '✓ Connected (no saved data)';
-        }
-      } catch (error) {
-        console.error('Load error:', error);
-        showStatus('⚠️ Load failed - check console');
-        document.getElementById('syncStatus').textContent = '⚠️ Connection failed';
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      showStatus("Saved");
     }
 
-    function populateTable(data) {
-      const tbody = document.getElementById('summaryBody');
-      const rows = tbody.querySelectorAll('tr');
+    function showStatus(msg){ status.textContent=msg; status.style.opacity="1"; setTimeout(()=>{status.style.opacity="0";},1500); }
+
+    function copyCSV(){
+      const headerInfo=`Leader: ${leader.value}\nSection: ${section.value}\nGroup: ${group.value}\n\n`;
       
-      data.forEach((rowData, i) => {
-        if (i < rows.length) {
-          const inputs = rows[i].querySelectorAll('input');
-          rowData.forEach((cell, j) => {
-            if (j < inputs.length) {
-              inputs[j].value = cell || '';
-            }
-          });
-        }
-      });
+      const rows = [...table5Tbody.querySelectorAll("tr")]
+        .map(tr => {
+          const inputs = [...tr.querySelectorAll("input.cell")];
+          return inputs.map(x => `"${x.value.replace(/"/g,'""')}"`).join(",");
+        })
+        .filter(row => {
+          const values = row.split(',').slice(0, 2).map(v => v.replace(/"/g, '').trim());
+          return values[0] !== '' || values[1] !== '';
+        })
+        .join("\n");
+
+      const text = headerInfo + rows;
+
+      navigator.clipboard.writeText(text)
+        .then(()=>showStatus("CSV copied"))
+        .catch(()=>{
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+          showStatus("CSV copied");
+        });
     }
 
-    async function saveToSheets() {
-      if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('YOUR_APPS_SCRIPT')) {
-        showStatus('⚠️ Please configure SCRIPT_URL in the code first!');
-        alert('Setup required: Please add your Google Apps Script URL in the CONFIG section of this HTML file.');
+    document.getElementById("saveBtn").onclick = saveAll;
+    document.getElementById("saveBtnTable1").onclick = saveAll;
+    document.getElementById("saveBtnTable2").onclick = saveAll;
+    document.getElementById("saveBtnTable3").onclick = saveAll;
+    document.getElementById("saveBtnTable4").onclick = saveAll;
+    document.getElementById("copyBtn").onclick = copyCSV;
+    document.getElementById("syncBtn").onclick = syncToGoogleSheets;
+
+    async function syncToGoogleSheets() {
+      if (!classParam || !leaderParam) {
+        showStatus("Error: No class/leader specified in URL");
         return;
       }
 
-      showStatus('Saving...');
-      document.getElementById('syncStatus').textContent = '⏳ Saving...';
+      if (GOOGLE_SCRIPT_URL === 'YOUR_SCRIPT_URL_HERE') {
+        showStatus("Error: Google Script URL not configured");
+        return;
+      }
+
+      showStatus("Syncing...");
+
+      const getRows = tbody => [...tbody.querySelectorAll("tr")].map(tr =>
+        [...tr.querySelectorAll("input.cell")].map(x=>x.value)
+      );
+
+      const payload = {
+        class: classParam,
+        leader: leaderParam,
+        leaderName: leader.value.trim(),
+        section: section.value.trim(),
+        groupNumber: group.value.trim(),
+        table5: getRows(table5Tbody).filter(row => row[0] || row[1])
+      };
 
       try {
-        const leaderName = document.getElementById('leaderName').value;
-        const section = document.getElementById('section').value;
-        const groupNum = document.getElementById('groupNumber').value;
-        
-        const tbody = document.getElementById('summaryBody');
-        const rows = [...tbody.querySelectorAll('tr')].map(tr =>
-          [...tr.querySelectorAll('input')].map(input => input.value)
-        );
-
-        const values = [
-          [`Leader: ${leaderName}`, `Section: ${section}`, `Group: ${groupNum}`],
-          [],
-          ['Last Name', 'First Name', 'Activity', 'Practice', 'Quiz', 'Recitation', 'Lessons', 'Summative', 'Flashcards'],
-          ...rows
-        ];
-
-        const response = await fetch(CONFIG.SCRIPT_URL, {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
+          mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            action: 'save',
-            sheetName: currentSheetName,
-            values: values
-          })
+          body: JSON.stringify(payload)
         });
 
-        const result = await response.json();
-        
-        if (result.success) {
-          showStatus('✓ Saved successfully!');
-          document.getElementById('syncStatus').textContent = '✓ Connected to Google Sheets';
-        } else {
-          showStatus('⚠️ Save failed');
-          document.getElementById('syncStatus').textContent = '⚠️ Save failed';
-        }
+        showStatus("Synced to Google Sheets!");
       } catch (error) {
-        console.error('Save error:', error);
-        showStatus('⚠️ Save failed - check console');
-        document.getElementById('syncStatus').textContent = '⚠️ Connection error';
+        showStatus("Sync error: " + error.message);
       }
     }
 
-    function showStatus(msg) {
-      const status = document.getElementById('status');
-      status.textContent = msg;
-      status.style.opacity = '1';
-      setTimeout(() => { status.style.opacity = '0'; }, 2500);
-    }
+    document.getElementById("clearAllBtn").onclick = function() {
+      if (confirm("Are you sure you want to clear ALL data from all tables? This cannot be undone!")) {
+        const allTables = [
+          {tbody: table1Tbody, headers: table1HeadInputs},
+          {tbody: table2Tbody, headers: table2HeadInputs},
+          {tbody: table3Tbody, headers: table3HeadInputs},
+          {tbody: table4Tbody, headers: null},
+          {tbody: table5Tbody, headers: null}
+        ];
+        
+        allTables.forEach(({tbody, headers}) => {
+          const rows = tbody.querySelectorAll("tr");
+          rows.forEach(row => {
+            const inputs = row.querySelectorAll("input.cell");
+            inputs.forEach(input => {
+              input.value = "";
+            });
+          });
+          
+          if (headers) {
+            headers.forEach(h => h.value = "");
+          }
+        });
+        
+        leader.value = "";
+        section.value = "";
+        group.value = "";
+        
+        showStatus("All data cleared");
+        saveAll();
+      }
+    };
 
-    // Enter key support for login
-    document.addEventListener('DOMContentLoaded', () => {
-      const loginInputs = document.querySelectorAll('#loginClass, #loginUsername, #loginPassword');
-      loginInputs.forEach(input => {
-        input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') handleLogin();
+    document.getElementById("clearBtnTable1").onclick = function() {
+      if (confirm("Are you sure you want to clear all Activity data?")) {
+        clearTable(table1Tbody, table1HeadInputs);
+      }
+    };
+    
+    document.getElementById("clearBtnTable2").onclick = function() {
+      if (confirm("Are you sure you want to clear all Practice data?")) {
+        clearTable(table2Tbody, table2HeadInputs);
+      }
+    };
+    
+    document.getElementById("clearBtnTable3").onclick = function() {
+      if (confirm("Are you sure you want to clear all QRLS data?")) {
+        clearTable(table3Tbody, table3HeadInputs);
+      }
+    };
+    
+    document.getElementById("clearBtnTable4").onclick = function() {
+      if (confirm("Are you sure you want to clear all Flashcards data?")) {
+        clearTable(table4Tbody, null);
+      }
+    };
+
+    function clearTable(tbody, headers) {
+      const rows = tbody.querySelectorAll("tr");
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll("input.cell");
+        inputs.forEach((input, index) => {
+          if (index >= 2 && !input.readOnly) {
+            input.value = "";
+          }
         });
       });
-    });
+      
+      if (headers) {
+        headers.forEach(h => h.value = "");
+      }
+      
+      showStatus("Cleared");
+      saveAll();
+    }
+
+    window.onbeforeunload = saveAll;
+
+    initialLoad();
   </script>
 </body>
 </html>
