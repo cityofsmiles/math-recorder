@@ -26,7 +26,8 @@
       align-items: center;
       z-index: 9999;
     }
-    #loginOverlay.hidden { /* FIX: This new rule ensures display: none overrides display: flex when the class is present */
+    /* FIX 1: Ensure display: none overrides display: flex when the 'hidden' class is added */
+    #loginOverlay.hidden {
       display: none;
     }
     #loginBox {
@@ -412,7 +413,7 @@
           purpose: "any maskable"
         },
         {
-          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%234285f4' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%3E",
+          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%234285f4' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%2E",
           sizes: "512x512",
           type: "image/svg+xml",
           purpose: "any maskable"
@@ -528,7 +529,7 @@
       
       if (enteredPassword === correctPassword) {
         sessionStorage.setItem(sessionKey, 'authenticated');
-        loginOverlay.classList.add('hidden'); // This adds the 'hidden' class
+        loginOverlay.classList.add('hidden');
         mainContent.classList.remove('hidden');
         loginError.style.display = 'none';
         initialLoad();
@@ -736,16 +737,40 @@
         return; // Silently skip if not configured
       }
 
+      // Helper function to get row data (raw values)
       const getRows = tbody => [...tbody.querySelectorAll("tr")].map(tr =>
         [...tr.querySelectorAll("input.cell")].map(x=>x.value)
       );
 
+      // Helper function to get header data
+      const getHeaders = headerInputs => [...headerInputs].map(x=>x.value);
+      
+      /* FIX 2: Include all table data and headers in the payload */
       const payload = {
         class: classParam,
         leader: leaderParam,
+        
+        // Info boxes
         leaderName: leader.value.trim(),
         section: section.value.trim(),
         groupNumber: group.value.trim(),
+        
+        // Table 1 Data
+        table1: getRows(table1Tbody),
+        table1Headers: getHeaders(table1HeadInputs),
+        
+        // Table 2 Data
+        table2: getRows(table2Tbody),
+        table2Headers: getHeaders(table2HeadInputs),
+        
+        // Table 3 Data
+        table3: getRows(table3Tbody),
+        table3Headers: getHeaders(table3HeadInputs),
+        
+        // Table 4 Data
+        table4: getRows(table4Tbody),
+        
+        // Table 5 Data (Summary - filtered for non-empty student rows)
         table5: getRows(table5Tbody).filter(row => row[0] || row[1])
       };
 
@@ -847,3 +872,4 @@
   </script>
 </body>
 </html>
+
