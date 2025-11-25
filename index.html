@@ -26,7 +26,6 @@
       align-items: center;
       z-index: 9999;
     }
-    /* FIX 1: Ensure display: none overrides display: flex when the 'hidden' class is added */
     #loginOverlay.hidden {
       display: none;
     }
@@ -553,7 +552,7 @@
       ? `math_record_${classParam}_${leaderParam}_v14`
       : "math_record_sheet_v14";
 
-    const ROW_COUNT = 10; // MODIFIED: Strictly set to 10 rows
+    const ROW_COUNT = 10;
 
     const status = document.getElementById("status");
     const leader = document.getElementById("leaderName");
@@ -598,7 +597,7 @@
         group.value = saved.group || "";
       }
       
-      // FIX: Helper function to render exactly ROW_COUNT rows from saved data
+      // Helper function to render exactly ROW_COUNT rows from saved data
       const renderTable = (tbody, savedData, columnCount, readOnlyIndices, headerInputs, savedHeaders) => {
         // Clear existing rows (in case of re-initialization or old data)
         tbody.innerHTML = ''; 
@@ -634,7 +633,38 @@
       renderTable(table5Tbody, saved.table5, 9, [0,1,2,3,4,5,6,7,8]); // No header inputs array passed
 
       setupFormulas();
+      attachAutosaveListeners(); // NEW: Attach listeners after initial load/render
     }
+
+    // NEW: Debounce utility function
+    function debounce(func, timeout = 1500) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+      };
+    }
+    
+    // NEW: Function to attach event listeners for autosave
+    function attachAutosaveListeners() {
+      // Debounced version of saveAll (which includes sync)
+      const debouncedSaveAll = debounce(saveAll, 1500); // 1.5 seconds delay
+      
+      // Select all editable cell inputs and header inputs
+      const allEditableInputs = [
+        ...document.querySelectorAll("#mainContent input.cell:not([readonly])"),
+        ...document.querySelectorAll("#leaderName, #section, #groupNumber")
+      ];
+      
+      allEditableInputs.forEach(input => {
+        // Remove existing listener before adding to prevent duplicates
+        input.removeEventListener('input', debouncedSaveAll); 
+        
+        // Add the new debounced listener
+        input.addEventListener('input', debouncedSaveAll);
+      });
+    }
+
 
     function setupFormulas() {
       const t1Rows = table1Tbody.querySelectorAll("tr");
@@ -678,6 +708,8 @@
         t3Inputs.forEach((input,j)=>{if(j<12 || j>=13) input.addEventListener("input", recalc)});
         t4Inputs.forEach((input,j)=>{if(j<37) input.addEventListener("input", recalc)});
       });
+      
+      attachAutosaveListeners(); // Ensure all new inputs get listeners
     }
 
     function saveAll() {
@@ -743,7 +775,7 @@
     document.getElementById("saveBtnTable3").onclick = saveAll;
     document.getElementById("saveBtnTable4").onclick = saveAll;
     document.getElementById("copyBtn").onclick = copyCSV;
-    document.getElementById("syncBtn").onclick = syncToGoogleSheets;
+    document.getElementById("syncBtn").onclick = saveAll; // CHANGED: Calls saveAll to trigger sync
 
     async function syncToGoogleSheets() {
       if (!classParam || !leaderParam) {
