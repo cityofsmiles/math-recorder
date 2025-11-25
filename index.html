@@ -413,7 +413,7 @@
           purpose: "any maskable"
         },
         {
-          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%234285f4' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%2E",
+          src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%234285f4' width='512' height='512' rx='64'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3E∑%3C/text%3E%3C/svg%3E",
           sizes: "512x512",
           type: "image/svg+xml",
           purpose: "any maskable"
@@ -553,7 +553,7 @@
       ? `math_record_${classParam}_${leaderParam}_v14`
       : "math_record_sheet_v14";
 
-    const ROW_COUNT = 11;
+    const ROW_COUNT = 10; // MODIFIED: Strictly set to 10 rows
 
     const status = document.getElementById("status");
     const leader = document.getElementById("leaderName");
@@ -597,24 +597,41 @@
         section.value = saved.section || "";
         group.value = saved.group || "";
       }
+      
+      // FIX: Helper function to render exactly ROW_COUNT rows from saved data
+      const renderTable = (tbody, savedData, columnCount, readOnlyIndices, headerInputs, savedHeaders) => {
+        // Clear existing rows (in case of re-initialization or old data)
+        tbody.innerHTML = ''; 
 
-      if(saved.table1) saved.table1.forEach(r=>renderRow(table1Tbody,28,r,[27]));
-      else for(let i=0;i<ROW_COUNT;i++) renderRow(table1Tbody,28,[],[27]);
-      if(saved.table1Headers) table1HeadInputs.forEach((input,i)=>input.value=saved.table1Headers[i]||"");
+        // Get the data to render, limited to ROW_COUNT (10)
+        const dataToRender = (savedData || []).slice(0, ROW_COUNT);
 
-      if(saved.table2) saved.table2.forEach(r=>renderRow(table2Tbody,28,r,[27]));
-      else for(let i=0;i<ROW_COUNT;i++) renderRow(table2Tbody,28,[],[27]);
-      if(saved.table2Headers) table2HeadInputs.forEach((input,i)=>input.value=saved.table2Headers[i]||"");
+        // Render rows with data
+        dataToRender.forEach(r => renderRow(tbody, columnCount, r, readOnlyIndices));
+        
+        // Fill remaining rows up to ROW_COUNT with empty rows
+        for (let i = dataToRender.length; i < ROW_COUNT; i++) {
+          renderRow(tbody, columnCount, [], readOnlyIndices);
+        }
+        
+        // Restore headers if available
+        if(headerInputs && savedHeaders) headerInputs.forEach((input,i)=>input.value=savedHeaders[i]||"");
+      };
 
-      if(saved.table3) saved.table3.forEach(r=>renderRow(table3Tbody,16,r,[12]));
-      else for(let i=0;i<ROW_COUNT;i++) renderRow(table3Tbody,16,[...Array(16)].map(()=>""),[12]);
-      if(saved.table3Headers) table3HeadInputs.forEach((input,i)=>input.value=saved.table3Headers[i]||"");
+      // Table 1 (Activity) - 28 columns, 27 is readonly
+      renderTable(table1Tbody, saved.table1, 28, [27], table1HeadInputs, saved.table1Headers);
 
-      if(saved.table4) saved.table4.forEach(r=>renderRow(table4Tbody,38,r,[37]));
-      else for(let i=0;i<ROW_COUNT;i++) renderRow(table4Tbody,38,[...Array(38)].map(()=>""),[37]);
+      // Table 2 (Practice) - 28 columns, 27 is readonly
+      renderTable(table2Tbody, saved.table2, 28, [27], table2HeadInputs, saved.table2Headers);
 
-      if(saved.table5) saved.table5.forEach(r=>renderRow(table5Tbody,9,r,[0,1,2,3,4,5,6,7,8]));
-      else for(let i=0;i<ROW_COUNT;i++) renderRow(table5Tbody,9,[],[0,1,2,3,4,5,6,7,8]);
+      // Table 3 (QRLS) - 16 columns, 12 is readonly
+      renderTable(table3Tbody, saved.table3, 16, [12], table3HeadInputs, saved.table3Headers);
+
+      // Table 4 (Flashcards) - 38 columns, 37 is readonly
+      renderTable(table4Tbody, saved.table4, 38, [37]); // No header inputs array passed
+
+      // Table 5 (Summary) - 9 columns, all readonly (0-8)
+      renderTable(table5Tbody, saved.table5, 9, [0,1,2,3,4,5,6,7,8]); // No header inputs array passed
 
       setupFormulas();
     }
@@ -745,7 +762,6 @@
       // Helper function to get header data
       const getHeaders = headerInputs => [...headerInputs].map(x=>x.value);
       
-      /* FIX 2: Include all table data and headers in the payload */
       const payload = {
         class: classParam,
         leader: leaderParam,
@@ -872,4 +888,3 @@
   </script>
 </body>
 </html>
-
