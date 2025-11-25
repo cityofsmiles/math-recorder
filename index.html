@@ -14,6 +14,61 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 10px; font-size: 16px; }
     h2 { margin-bottom: 10px; text-align: center; }
+    #loginOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #loginBox {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+    #loginBox h3 {
+      margin-top: 0;
+      text-align: center;
+      color: #4285f4;
+    }
+    #loginBox input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    #loginBox button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #loginBox button:hover {
+      background: #3367d6;
+    }
+    #loginError {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+      display: none;
+    }
+    .hidden { display: none; }
     .info-boxes { margin-bottom: 20px; }
     .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; }
     .info-boxes input { margin-bottom: 12px; padding: 8px; width: 95%; max-width: 400px; font-size: 16px; }
@@ -116,6 +171,18 @@
 </head>
 
 <body>
+  <!-- Login Overlay -->
+  <div id="loginOverlay">
+    <div id="loginBox">
+      <h3>Leader Login</h3>
+      <p style="text-align: center; color: #666;">Enter your password to continue</p>
+      <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
+      <button id="loginBtn">Login</button>
+      <div id="loginError">Incorrect password. Please try again.</div>
+    </div>
+  </div>
+
+  <div id="mainContent" class="hidden">
   <h2>Record Sheet in Math</h2>
 
   <div id="installPrompt">
@@ -285,10 +352,45 @@
   <button id="copyBtn">Copy CSV</button>
   <button id="syncBtn">Sync to Google Sheets</button>
   <div id="status"></div>
+  </div>
 
   <script>
     // REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3MgS3mfEs4naEfVXUfjd7jsRljF6Oy6eIFp5V66e_sKVULy6_benmNhDywsB2SFFR/exec';
+
+    // Password configuration for each leader
+    const PASSWORDS = {
+      '1-1': 'password11',
+      '1-2': 'password12',
+      '1-3': 'password13',
+      '1-4': 'password14',
+      '1-5': 'password15',
+      '2-1': 'password21',
+      '2-2': 'password22',
+      '2-3': 'password23',
+      '2-4': 'password24',
+      '2-5': 'password25',
+      '3-1': 'password31',
+      '3-2': 'password32',
+      '3-3': 'password33',
+      '3-4': 'password34',
+      '3-5': 'password35',
+      '4-1': 'password41',
+      '4-2': 'password42',
+      '4-3': 'password43',
+      '4-4': 'password44',
+      '4-5': 'password45',
+      '5-1': 'password51',
+      '5-2': 'password52',
+      '5-3': 'password53',
+      '5-4': 'password54',
+      '5-5': 'password55',
+      '6-1': 'password61',
+      '6-2': 'password62',
+      '6-3': 'password63',
+      '6-4': 'password64',
+      '6-5': 'password65'
+    };
     // PWA Setup
     const manifestData = {
       name: "Math Record Sheet",
@@ -394,6 +496,53 @@
     const urlParams = new URLSearchParams(window.location.search);
     const classParam = urlParams.get('class') || '';
     const leaderParam = urlParams.get('leader') || '';
+    
+    // Password protection
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainContent = document.getElementById('mainContent');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    
+    const leaderKey = `${classParam}-${leaderParam}`;
+    const correctPassword = PASSWORDS[leaderKey];
+    const sessionKey = `auth_${leaderKey}`;
+    
+    // Check if already authenticated in this session
+    if (sessionStorage.getItem(sessionKey) === 'authenticated') {
+      loginOverlay.classList.add('hidden');
+      mainContent.classList.remove('hidden');
+    }
+    
+    function checkPassword() {
+      const enteredPassword = passwordInput.value;
+      
+      if (!classParam || !leaderParam) {
+        loginError.textContent = 'Invalid URL. Please use the correct link.';
+        loginError.style.display = 'block';
+        return;
+      }
+      
+      if (enteredPassword === correctPassword) {
+        sessionStorage.setItem(sessionKey, 'authenticated');
+        loginOverlay.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        loginError.style.display = 'none';
+        initialLoad();
+      } else {
+        loginError.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+    
+    loginBtn.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
+    
+    // Focus password input on load
+    passwordInput.focus();
     
     // Create unique storage key based on URL parameters
     const STORAGE_KEY = classParam && leaderParam 
