@@ -512,7 +512,6 @@
     if (sessionStorage.getItem(sessionKey) === 'authenticated') {
       loginOverlay.classList.add('hidden');
       mainContent.classList.remove('hidden');
-      initialLoad();
     }
     
     function checkPassword() {
@@ -840,6 +839,8 @@
     }
 
     window.onbeforeunload = saveAll;
+
+    initialLoad();
   </script>
 </body>
 </html>
