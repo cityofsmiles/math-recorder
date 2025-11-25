@@ -531,6 +531,9 @@
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       showStatus("Saved");
+      
+      // Auto-sync to Google Sheets after saving
+      syncToGoogleSheets();
     }
 
     function showStatus(msg){ status.textContent=msg; status.style.opacity="1"; setTimeout(()=>{status.style.opacity="0";},1500); }
@@ -574,16 +577,12 @@
 
     async function syncToGoogleSheets() {
       if (!classParam || !leaderParam) {
-        showStatus("Error: No class/leader specified in URL");
-        return;
+        return; // Silently skip if no URL parameters
       }
 
       if (GOOGLE_SCRIPT_URL === 'YOUR_SCRIPT_URL_HERE') {
-        showStatus("Error: Google Script URL not configured");
-        return;
+        return; // Silently skip if not configured
       }
-
-      showStatus("Syncing...");
 
       const getRows = tbody => [...tbody.querySelectorAll("tr")].map(tr =>
         [...tr.querySelectorAll("input.cell")].map(x=>x.value)
@@ -608,9 +607,9 @@
           body: JSON.stringify(payload)
         });
 
-        showStatus("Synced to Google Sheets!");
+        showStatus("Saved & Synced!");
       } catch (error) {
-        showStatus("Sync error: " + error.message);
+        showStatus("Saved (sync failed)");
       }
     }
 
