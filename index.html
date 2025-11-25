@@ -14,7 +14,7 @@
     }
 
     h2 { margin-bottom: 10px; text-align: center; }
-
+    
     .login-container {
       max-width: 450px;
       margin: 80px auto;
@@ -22,6 +22,11 @@
       background: white;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .login-container h2 {
+      margin-bottom: 20px;
+      color: #333;
     }
     
     .login-form select,
@@ -44,6 +49,11 @@
       border-radius: 6px;
       font-size: 16px;
       cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .login-form button:hover {
+      transform: translateY(-2px);
     }
     
     .login-info {
@@ -66,6 +76,19 @@
       justify-content: space-between;
       align-items: center;
       border-left: 4px solid #667eea;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .user-banner .user-info {
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .user-banner button {
+      padding: 8px 16px;
+      font-size: 14px;
+      margin: 0;
     }
     
     .collaboration-banner {
@@ -86,12 +109,16 @@
     }
     
     button { 
-      margin: 10px 10px 0 0; 
       padding: 12px 20px; 
       font-size: 16px; 
       cursor: pointer;
       border: none;
       border-radius: 6px;
+      transition: transform 0.2s;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
     }
     
     #status {
@@ -106,6 +133,7 @@
       opacity: 0;
       transition: opacity 0.3s;
       z-index: 999;
+      pointer-events: none;
     }
     
     .container {
@@ -118,15 +146,21 @@
     }
     
     .info-boxes { margin-bottom: 20px; }
-    .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; }
+    .info-boxes label { display: block; margin-bottom: 4px; font-weight: bold; color: #555; }
     .info-boxes input { 
       margin-bottom: 12px; 
-      padding: 8px; 
-      width: 95%; 
+      padding: 10px; 
+      width: 100%; 
       max-width: 400px; 
       font-size: 16px;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    
+    .info-boxes input:focus {
+      outline: none;
+      border-color: #667eea;
     }
     
     table { 
@@ -137,32 +171,37 @@
     }
     
     th, td { 
-      border: 1px solid #ccc;
-      padding: 8px;
-      min-width: 60px;
+      border: 1px solid #ddd;
+      padding: 10px 8px;
+      min-width: 80px;
     }
     
     th { 
-      background: #f0f0f0;
+      background: #f8f9fa;
       font-weight: 600;
+      color: #555;
+      text-align: left;
     }
     
     input.cell { 
       width: 100%;
       border: none;
-      padding: 4px;
+      padding: 6px;
       font-size: 14px;
       box-sizing: border-box;
+      background: transparent;
     }
     
     input.cell:focus { 
-      outline: 2px solid dodgerblue; 
-      background: #eef6ff; 
+      outline: 2px solid #667eea; 
+      background: #f0f7ff;
+      border-radius: 4px;
     }
     
     input.cell[readonly] { 
       background: #f3f3f3; 
-      color: #555; 
+      color: #888;
+      cursor: not-allowed;
     }
     
     .table-section { 
@@ -171,13 +210,39 @@
     }
     
     .table-section h3 {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       color: #333;
+      font-size: 18px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .button-group button {
+        flex: 1;
+        min-width: 140px;
+      }
+      
+      table {
+        font-size: 12px;
+      }
+      
+      th, td {
+        padding: 6px 4px;
+      }
     }
   </style>
 </head>
 <body>
-
   <!-- Login Screen -->
   <div id="loginScreen" class="login-container">
     <h2>🔐 Group Record Login</h2>
@@ -197,8 +262,8 @@
         <option value="class5">Class 5</option>
         <option value="class6">Class 6</option>
       </select>
-      <input type="text" id="loginUsername" placeholder="Username (e.g., leader1)" required>
-      <input type="password" id="loginPassword" placeholder="Password" required>
+      <input type="text" id="loginUsername" placeholder="Username (e.g., leader1)" required autocomplete="username">
+      <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
       <button type="button" onclick="handleLogin()">Login</button>
       <div id="loginError" style="color: #ef4444; font-size: 14px; margin-top: 10px;"></div>
     </form>
@@ -211,7 +276,7 @@
 
       <div class="user-banner">
         <div class="user-info">
-          <strong id="userDisplay"></strong>
+          <span id="userDisplay"></span>
         </div>
         <button onclick="handleLogout()" style="background: #ef4444; color: white;">Logout</button>
       </div>
@@ -221,18 +286,18 @@
       </div>
 
       <div class="sync-warning">
-        <strong>✓ Real-time sync enabled:</strong> Your changes sync to Google Sheets. Click "Save" to push updates.
+        <strong>✓ Real-time sync enabled:</strong> Your changes are saved to Google Sheets. Click "Save" to push updates.
       </div>
 
       <div class="info-boxes">
         <label for="leaderName">Leader's Name:</label>
-        <input type="text" id="leaderName">
+        <input type="text" id="leaderName" placeholder="Enter leader's full name">
 
         <label for="section">Section:</label>
-        <input type="text" id="section">
+        <input type="text" id="section" placeholder="Enter section">
 
         <label for="groupNumber">Group Number:</label>
-        <input type="text" id="groupNumber">
+        <input type="text" id="groupNumber" placeholder="Enter group number">
       </div>
 
       <!-- Summary Table -->
@@ -256,17 +321,25 @@
         </table>
       </div>
 
-      <button onclick="saveToSheets()" style="background: #10b981; color: white;">💾 Save to Google Sheets</button>
-      <button onclick="loadFromSheets()" style="background: #3b82f6; color: white;">🔄 Reload Data</button>
+      <div class="button-group">
+        <button onclick="saveToSheets()" style="background: #10b981; color: white;">💾 Save to Google Sheets</button>
+        <button onclick="loadFromSheets()" style="background: #3b82f6; color: white;">🔄 Reload Data</button>
+      </div>
     </div>
   </div>
 
   <div id="status"></div>
 
   <script>
+    // =================================================================
+    // 🔧 CONFIGURATION - PASTE YOUR APPS SCRIPT URL HERE
+    // =================================================================
     const CONFIG = {
+      // Replace with your Apps Script Web App URL
       SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxauIdAPAr-pUCfPpHXQq_8F_rL0SNb-6T6vAGjirTE8KVOSeBBHlVhV_ePPzLiA2_m/exec'
+      // Example: 'https://script.google.com/macros/s/AKfycby.../exec'
     };
+    // =================================================================
 
     const USERS = {
       teacher: { password: 'teacherpass', role: 'teacher', displayName: 'Teacher' },
@@ -296,7 +369,7 @@
 
       const user = USERS[username];
       if (!user || user.password !== password) {
-        errorDiv.textContent = 'Invalid credentials';
+        errorDiv.textContent = 'Invalid username or password';
         return;
       }
 
@@ -314,7 +387,7 @@
     }
 
     function handleLogout() {
-      if (confirm('Logout?')) {
+      if (confirm('Are you sure you want to logout?')) {
         location.reload();
       }
     }
@@ -329,6 +402,7 @@
           const input = document.createElement('input');
           input.className = 'cell';
           input.value = '';
+          input.placeholder = j < 2 ? (j === 0 ? 'Last Name' : 'First Name') : '';
           td.appendChild(input);
           tr.appendChild(td);
         }
@@ -337,11 +411,21 @@
     }
 
     async function loadFromSheets() {
+      if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('YOUR_APPS_SCRIPT')) {
+        showStatus('⚠️ Please configure SCRIPT_URL in the code first!');
+        document.getElementById('syncStatus').textContent = '⚠️ Not configured - setup required';
+        return;
+      }
+
       showStatus('Loading...');
+      document.getElementById('syncStatus').textContent = '⏳ Loading...';
 
       try {
         const response = await fetch(CONFIG.SCRIPT_URL, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             action: 'load',
             sheetName: currentSheetName
@@ -351,19 +435,24 @@
         const result = await response.json();
         
         if (result.success && result.data && result.data.length > 3) {
+          // Populate info boxes
           const header = result.data[0];
           document.getElementById('leaderName').value = header[0]?.replace('Leader: ', '') || '';
           document.getElementById('section').value = header[1]?.replace('Section: ', '') || '';
           document.getElementById('groupNumber').value = header[2]?.replace('Group: ', '') || '';
 
+          // Populate table (skip first 3 rows: header info, blank, column headers)
           populateTable(result.data.slice(3));
-          showStatus('✓ Data loaded');
+          showStatus('✓ Data loaded successfully');
+          document.getElementById('syncStatus').textContent = '✓ Connected to Google Sheets';
         } else {
-          showStatus('No existing data');
+          showStatus('No existing data - starting fresh');
+          document.getElementById('syncStatus').textContent = '✓ Connected (no saved data)';
         }
       } catch (error) {
         console.error('Load error:', error);
-        showStatus('Load failed - check console');
+        showStatus('⚠️ Load failed - check console');
+        document.getElementById('syncStatus').textContent = '⚠️ Connection failed';
       }
     }
 
@@ -384,7 +473,14 @@
     }
 
     async function saveToSheets() {
+      if (!CONFIG.SCRIPT_URL || CONFIG.SCRIPT_URL.includes('YOUR_APPS_SCRIPT')) {
+        showStatus('⚠️ Please configure SCRIPT_URL in the code first!');
+        alert('Setup required: Please add your Google Apps Script URL in the CONFIG section of this HTML file.');
+        return;
+      }
+
       showStatus('Saving...');
+      document.getElementById('syncStatus').textContent = '⏳ Saving...';
 
       try {
         const leaderName = document.getElementById('leaderName').value;
@@ -405,6 +501,9 @@
 
         const response = await fetch(CONFIG.SCRIPT_URL, {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             action: 'save',
             sheetName: currentSheetName,
@@ -416,12 +515,15 @@
         
         if (result.success) {
           showStatus('✓ Saved successfully!');
+          document.getElementById('syncStatus').textContent = '✓ Connected to Google Sheets';
         } else {
-          showStatus('Save failed');
+          showStatus('⚠️ Save failed');
+          document.getElementById('syncStatus').textContent = '⚠️ Save failed';
         }
       } catch (error) {
         console.error('Save error:', error);
-        showStatus('Save failed - check console');
+        showStatus('⚠️ Save failed - check console');
+        document.getElementById('syncStatus').textContent = '⚠️ Connection error';
       }
     }
 
@@ -432,6 +534,7 @@
       setTimeout(() => { status.style.opacity = '0'; }, 2500);
     }
 
+    // Enter key support for login
     document.addEventListener('DOMContentLoaded', () => {
       const loginInputs = document.querySelectorAll('#loginClass, #loginUsername, #loginPassword');
       loginInputs.forEach(input => {
