@@ -1,0 +1,180 @@
+      '1-1': 'pineapple',
+      '1-2': 'elephant',
+      '1-3': 'blueberry',
+      '1-4': 'kangaroo',
+      '1-5': 'broccoli',
+      '2-1': 'strawberry',
+      '2-2': 'cucumber',
+      '2-3': 'octopuses',
+      '2-4': 'grapefruit',
+      '2-5': 'avocadoes',
+      '3-1': 'mountain',
+      '3-2': 'rainforest',
+      '3-3': 'waterfall',
+      '3-4': 'sunflower',
+      '3-5': 'zucchini',
+      '4-1': 'cheetahs',
+      '4-2': 'aardvarks',
+      '4-3': 'nectarine',
+      '4-4': 'artichoke',
+      '4-5': 'asparagus',
+      '5-1': 'blackbear',
+      '5-2': 'cardinals',
+      '5-3': 'potatoes',
+      '5-4': 'spinaches',
+      '5-5': 'cauliflower',
+      '6-1': 'pinecones',
+      '6-2': 'sequoias',
+      '6-3': 'dolphins',
+      '6-4': 'flamingos',
+      '6-5': 'crocodile'
+
+Class 1
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=1
+Password: pineapple
+
+Class 1
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=2
+Password: elephant
+
+Class 1
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=3
+Password: blueberry
+
+Class 1
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=4
+Password: kangaroo
+
+Class 1
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=5
+Password: broccoli
+
+Class 2
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=2&leader=1
+Password: strawberry
+
+Class 2
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=2&leader=2
+Password: cucumber
+
+Class 2
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=2&leader=3
+Password: octopuses
+
+Class 2
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=2&leader=4
+Password: grapefruit
+
+Class 2
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=2&leader=5
+Password: avocadoes
+
+Class 3
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=3&leader=1
+Password: mountain
+
+Class 3
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=3&leader=2
+Password: rainforest
+
+Class 3
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=3&leader=3
+Password: waterfall
+
+Class 3
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=3&leader=4
+Password: sunflower
+
+Class 3
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=3&leader=5
+Password: zucchini
+
+Class 4
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=4&leader=1
+Password: cheetahs
+
+Class 4
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=4&leader=2
+Password: aardvarks
+
+Class 4
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=4&leader=3
+Password: nectarine
+
+Class 4
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=4&leader=4
+Password: artichoke
+
+Class 4
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=4&leader=5
+Password: asparagus
+
+Class 5
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=5&leader=1
+Password: blackbear
+
+Class 5
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=5&leader=2
+Password: cardinals
+
+Class 5
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=5&leader=3
+Password: potatoes
+
+Class 5
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=5&leader=4
+Password: spinaches
+
+Class 5
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=5&leader=5
+Password: cauliflower
+
+Class 6
+Leader 1
+URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=1
+Password: pinecones
+
+Class 6
+Leader 2
+URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=2
+Password: sequoias
+
+Class 6
+Leader 3
+URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=3
+Password: dolphins
+
+Class 6
+Leader 4
+URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=4
+Password: flamingos
+
+Class 6
+Leader 5
+URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=5
+Password: crocodile
