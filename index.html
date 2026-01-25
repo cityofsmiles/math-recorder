@@ -46,7 +46,6 @@
     th { background: #f0f0f0; position: sticky; top: 0; z-index: 10; padding: 4px; font-size: 12px; }
     td { background: #fff; }
     
-    /* Sticky Name Columns */
     th:nth-child(1), td:nth-child(1) { position: sticky; left: 0; background: #fff; z-index: 5; border-right: 2px solid #ddd; }
     th:nth-child(2), td:nth-child(2) { position: sticky; left: 60px; background: #fff; z-index: 5; border-right: 2px solid #ddd; }
     th:nth-child(1), th:nth-child(2) { background: #f0f0f0; z-index: 15; }
@@ -111,7 +110,7 @@
       </div>
       <div class="button-container">
         <button id="saveBtnTable1">Save Activity</button>
-        <button onclick="clearTable('table1')">Clear</button>
+        <button onclick="clearTable('table1')">Clear Activity</button>
       </div>
     </div>
 
@@ -131,6 +130,7 @@
       </div>
       <div class="button-container">
         <button id="saveBtnTable2">Save Practice</button>
+        <button onclick="clearTable('table2')">Clear Practice</button>
       </div>
     </div>
 
@@ -153,6 +153,7 @@
       </div>
       <div class="button-container">
         <button id="saveBtnTable3">Save QRLS</button>
+        <button onclick="clearTable('table3')">Clear QRLS</button>
       </div>
     </div>
 
@@ -172,6 +173,7 @@
       </div>
       <div class="button-container">
         <button id="saveBtnTable4">Save Flashcards</button>
+        <button onclick="clearTable('table4')">Clear Flashcards</button>
       </div>
     </div>
 
@@ -192,6 +194,7 @@
       <div class="button-container">
         <button id="saveBtn">Save All</button>
         <button id="syncBtn">Sync to Google Sheets</button>
+        <button onclick="clearAllData()" style="color: red;">Clear All Tables</button>
       </div>
     </div>
 
@@ -216,13 +219,11 @@
     const leaderKey = `${classParam}-${leaderParam}`;
     const STORAGE_KEY = `math_v16_${leaderKey}`;
 
-    // Elements
     const loginOverlay = document.getElementById('loginOverlay');
     const mainContent = document.getElementById('mainContent');
     const passwordInput = document.getElementById('passwordInput');
     const statusDiv = document.getElementById('status');
 
-    // Auth Logic
     function checkAuth() {
       if (sessionStorage.getItem('auth_'+leaderKey)) {
         loginOverlay.classList.add('hidden');
@@ -242,7 +243,6 @@
       }
     };
 
-    // Table Rendering
     function initialLoad() {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
       document.getElementById('leaderName').value = saved.leader || "";
@@ -252,7 +252,7 @@
       renderTable('table1', 38, saved.table1, [37]);
       renderTable('table2', 38, saved.table2, [37]);
       renderTable('table3', 16, saved.table3, [12]);
-      renderTable('table4', 48, saved.table4, [47]); // 45 cols + 2 name + 1 total
+      renderTable('table4', 48, saved.table4, [47]);
       renderTable('table5', 9, saved.table5, [0,1,2,3,4,5,6,7,8]);
 
       setupFormulas();
@@ -286,10 +286,8 @@
         const t5 = document.getElementById('table5-tbody').children[i].querySelectorAll('input');
 
         const calculate = () => {
-          // Sync Names
           [t2, t3, t4, t5].forEach(t => { t[0].value = t1[0].value; t[1].value = t1[1].value; });
 
-          // Table 1 & 2 (Activity & Practice 1-35)
           let s1 = 0, s2 = 0;
           for (let j = 2; j <= 36; j++) {
             s1 += parseFloat(t1[j].value) || 0;
@@ -298,15 +296,13 @@
           t1[37].value = s1; t5[2].value = s1;
           t2[37].value = s2; t5[3].value = s2;
 
-          // Table 3 (Quizzes 1-10)
           let s3 = 0;
           for (let j = 2; j <= 11; j++) s3 += parseFloat(t3[j].value) || 0;
           t3[12].value = s3; t5[4].value = s3;
-          t5[5].value = t3[13].value; // Recit
-          t5[6].value = t3[14].value; // Lesson
-          t5[7].value = t3[15].value; // Summ
+          t5[5].value = t3[13].value;
+          t5[6].value = t3[14].value;
+          t5[7].value = t3[15].value;
 
-          // Table 4 (Flashcards 1-45)
           let s4 = 0;
           for (let j = 2; j <= 46; j++) s4 += parseFloat(t4[j].value) || 0;
           t4[47].value = s4; t5[8].value = s4;
@@ -314,6 +310,42 @@
 
         [t1, t2, t3, t4].forEach(t => t.forEach(inp => inp.oninput = calculate));
       }
+    }
+
+    function clearTable(id) {
+      if (!confirm(`Are you sure you want to clear all data in ${id}?`)) return;
+      
+      const tbody = document.getElementById(id + '-tbody');
+      const rows = tbody.querySelectorAll('tr');
+      
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        inputs.forEach((input, index) => {
+          // If Table 1, we clear names (0 and 1). 
+          // For other tables, we only clear scores (index >= 2) because names are synced.
+          if (id === 'table1' || index >= 2) {
+             if (!input.readOnly) input.value = "";
+          }
+        });
+      });
+
+      // Clear header inputs if they exist (Table 1, 2, 3)
+      const headerInputs = document.querySelectorAll(`#${id} thead input.cell`);
+      headerInputs.forEach(input => input.value = "");
+
+      saveAll();
+      showStatus(`${id} Cleared`);
+    }
+
+    function clearAllData() {
+      if (!confirm("This will clear ALL data in ALL tables. Names will also be removed. Continue?")) return;
+      ['table1', 'table2', 'table3', 'table4'].forEach(id => {
+        const tbody = document.getElementById(id + '-tbody');
+        tbody.querySelectorAll('input').forEach(inp => { if(!inp.readOnly) inp.value = ""; });
+        const headers = document.querySelectorAll(`#${id} thead input.cell`);
+        headers.forEach(h => h.value = "");
+      });
+      saveAll();
     }
 
     function saveAll() {
@@ -342,7 +374,7 @@
             class: classParam, leader: leaderParam,
             leaderName: data.leader, section: data.section, groupNumber: data.group,
             table1: data.table1, table2: data.table2, table3: data.table3,
-            table4: data.table4, table5: data.table5.filter(r => r[0] || r[1])
+            table4: data.table4, table5: data.table5
           })
         });
         showStatus("Sync Success!");
