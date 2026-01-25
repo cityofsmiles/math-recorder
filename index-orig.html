@@ -221,11 +221,6 @@
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>   
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>   
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>        
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
@@ -255,11 +250,6 @@
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
-            <th><input class="cell" value=""></th><th><input class="cell" value=""></th>        
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
             <th><input class="cell" value=""></th><th><input class="cell" value=""></th>
@@ -324,8 +314,6 @@
             <th>21</th><th>22</th><th>23</th><th>24</th><th>25</th>
             <th>26</th><th>27</th><th>28</th><th>29</th><th>30</th>
             <th>31</th><th>32</th><th>33</th><th>34</th><th>35</th>
-            <th>36</th><th>37</th><th>38</th><th>39</th><th>40</th>
-            <th>41</th><th>42</th><th>43</th><th>44</th><th>45</th> 
             <th>Flashcards</th>
           </tr>
         </thead>
@@ -630,16 +618,16 @@
       };
 
       // Table 1 (Activity) - 28 columns, 27 is readonly
-      renderTable(table1Tbody, saved.table1, 38, [37], table1HeadInputs, saved.table1Headers);
+      renderTable(table1Tbody, saved.table1, 28, [27], table1HeadInputs, saved.table1Headers);
 
       // Table 2 (Practice) - 28 columns, 27 is readonly
-      renderTable(table2Tbody, saved.table2, 38, [37], table2HeadInputs, saved.table2Headers);
+      renderTable(table2Tbody, saved.table2, 28, [27], table2HeadInputs, saved.table2Headers);
 
       // Table 3 (QRLS) - 16 columns, 12 is readonly
       renderTable(table3Tbody, saved.table3, 16, [12], table3HeadInputs, saved.table3Headers);
 
       // Table 4 (Flashcards) - 38 columns, 37 is readonly
-      renderTable(table4Tbody, saved.table4, 48, [47]); // No header inputs array passed
+      renderTable(table4Tbody, saved.table4, 38, [37]); // No header inputs array passed
 
       // Table 5 (Summary) - 9 columns, all readonly (0-8)
       renderTable(table5Tbody, saved.table5, 9, [0,1,2,3,4,5,6,7,8]); // No header inputs array passed
@@ -693,16 +681,16 @@
         const t5Inputs = t5Rows[i].querySelectorAll("input.cell");
 
         const recalc = ()=>{
-          let actSum=0; for(let j=2;j<=36;j++){const val=parseFloat(t1Inputs[j].value);if(!isNaN(val)) actSum+=val;}
-          t1Inputs[37].value=actSum; t5Inputs[2].value=actSum;
+          let actSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t1Inputs[j].value);if(!isNaN(val)) actSum+=val;}
+          t1Inputs[27].value=actSum; t5Inputs[2].value=actSum;
 
           t2Inputs[0].value=t1Inputs[0].value; t2Inputs[1].value=t1Inputs[1].value;
           t3Inputs[0].value=t1Inputs[0].value; t3Inputs[1].value=t1Inputs[1].value;
           t4Inputs[0].value=t1Inputs[0].value; t4Inputs[1].value=t1Inputs[1].value;
           t5Inputs[0].value=t1Inputs[0].value; t5Inputs[1].value=t1Inputs[1].value;
 
-          let prSum=0; for(let j=2;j<=36;j++){const val=parseFloat(t2Inputs[j].value);if(!isNaN(val)) prSum+=val;}
-          t2Inputs[37].value=prSum; t5Inputs[3].value=prSum;
+          let prSum=0; for(let j=2;j<=26;j++){const val=parseFloat(t2Inputs[j].value);if(!isNaN(val)) prSum+=val;}
+          t2Inputs[27].value=prSum; t5Inputs[3].value=prSum;
 
           let quizSum=0; for(let j=2;j<=11;j++){const val=parseFloat(t3Inputs[j].value);if(!isNaN(val)) quizSum+=val;}
           t3Inputs[12].value=quizSum; t5Inputs[4].value=quizSum;
@@ -711,14 +699,14 @@
           t5Inputs[6].value=t3Inputs[14].value;
           t5Inputs[7].value=t3Inputs[15].value;
 
-          let fcSum=0; for(let j=2;j<=46;j++){const val=parseFloat(t4Inputs[j].value);if(!isNaN(val)) fcSum+=val;}
-          t4Inputs[47].value=fcSum; t5Inputs[8].value=fcSum;
+          let fcSum=0; for(let j=2;j<=36;j++){const val=parseFloat(t4Inputs[j].value);if(!isNaN(val)) fcSum+=val;}
+          t4Inputs[37].value=fcSum; t5Inputs[8].value=fcSum;
         };
 
         t1Inputs.forEach(input=>input.addEventListener("input", recalc));
-        t2Inputs.forEach((input,j)=>{if(j<37) input.addEventListener("input", recalc)});
+        t2Inputs.forEach((input,j)=>{if(j<27) input.addEventListener("input", recalc)});
         t3Inputs.forEach((input,j)=>{if(j<12 || j>=13) input.addEventListener("input", recalc)});
-        t4Inputs.forEach((input,j)=>{if(j<47) input.addEventListener("input", recalc)});
+        t4Inputs.forEach((input,j)=>{if(j<37) input.addEventListener("input", recalc)});
       });
       
       attachAutosaveListeners(); // Ensure all new inputs get listeners
