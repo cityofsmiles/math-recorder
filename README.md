@@ -2,7 +2,7 @@
 
 ## How to Use
 1. I-copy ang link at i-open sa Chrome. Mag-login gamit ang sinend kong password.
-![Login](https://res.cloudinary.com/dadubemrv/image/upload/v1769398305/yml6cbgbhtl4w3p6y8qc.jpg)
+![Login](https://res.cloudinary.com/dadubemrv/image/upload/v1769399056/j8vexqjl3077zjz9ywqs.jpg)
 
 2. I-type ang infos.
 ![Infos](https://res.cloudinary.com/dadubemrv/image/upload/v1769398383/ce5kma5um9p9f17m1kjw.jpg)
