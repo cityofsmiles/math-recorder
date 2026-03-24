@@ -1,7 +1,7 @@
 # Math Recorder by Jonathan R. Bacolod
 
 ## How to Use
-1. I-copy ang link at i-open sa Chrome. Mag-login gamit ang sinend kong password.
+1. I-copy ang link at i-open sa Chrome. Wag makulit. Sa Chrome lang, hindi sa Messenger. Mag-login gamit ang sinend kong password.
 ![Login](https://res.cloudinary.com/dadubemrv/image/upload/v1769399056/j8vexqjl3077zjz9ywqs.jpg)
 
 2. I-type ang infos.

@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Track math activities, practices, quizzes, and more">
   <meta name="theme-color" content="#4285f4">
-  <link rel="icon" type="image/png" href="#">
+  <link rel="manifest" href="#" id="manifest-placeholder">
+  <link rel="icon" type="image/png" href="#" id="icon-placeholder">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Math Records">
@@ -242,38 +243,17 @@
       }
     };
 
-    async function initialLoad() {
-      showStatus("Connecting to cloud...");
-      try {
-        const fetchUrl = `${GOOGLE_SCRIPT_URL}?class=${classParam}&leader=${leaderParam}`;
-        const response = await fetch(fetchUrl);
-        const cloudData = await response.json();
-        
-        if (cloudData && !cloudData.error) {
-          renderAll(cloudData);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
-          showStatus("Cloud Sync Complete");
-          return;
-        }
-      } catch (e) {
-        console.warn("Cloud load failed, checking local storage...");
-      }
+    function initialLoad() {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      document.getElementById('leaderName').value = saved.leader || "";
+      document.getElementById('section').value = saved.section || "";
+      document.getElementById('groupNumber').value = saved.group || "";
 
-      const localSaved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      renderAll(localSaved);
-      showStatus(localSaved.leader ? "Loaded from Device" : "Ready");
-    }
-
-    function renderAll(data) {
-      document.getElementById('leaderName').value = data.leaderName || data.leader || "";
-      document.getElementById('section').value = data.section || "";
-      document.getElementById('groupNumber').value = data.groupNumber || data.group || "";
-
-      renderTable('table1', 38, data.table1, [37]);
-      renderTable('table2', 38, data.table2, [37]);
-      renderTable('table3', 16, data.table3, [12]);
-      renderTable('table4', 48, data.table4, [47]);
-      renderTable('table5', 9, data.table5, [0,1,2,3,4,5,6,7,8]);
+      renderTable('table1', 38, saved.table1, [37]);
+      renderTable('table2', 38, saved.table2, [37]);
+      renderTable('table3', 16, saved.table3, [12]);
+      renderTable('table4', 48, saved.table4, [47]);
+      renderTable('table5', 9, saved.table5, [0,1,2,3,4,5,6,7,8]);
 
       setupFormulas();
     }
@@ -333,18 +313,37 @@
     }
 
     function clearTable(id) {
-      if (!confirm(`Clear all data in ${id}?`)) return;
+      if (!confirm(`Are you sure you want to clear all data in ${id}?`)) return;
+      
       const tbody = document.getElementById(id + '-tbody');
-      tbody.querySelectorAll('input').forEach((input, index) => {
-          if (id === 'table1' || index >= 2) if (!input.readOnly) input.value = "";
+      const rows = tbody.querySelectorAll('tr');
+      
+      rows.forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        inputs.forEach((input, index) => {
+          // If Table 1, we clear names (0 and 1). 
+          // For other tables, we only clear scores (index >= 2) because names are synced.
+          if (id === 'table1' || index >= 2) {
+             if (!input.readOnly) input.value = "";
+          }
+        });
       });
+
+      // Clear header inputs if they exist (Table 1, 2, 3)
+      const headerInputs = document.querySelectorAll(`#${id} thead input.cell`);
+      headerInputs.forEach(input => input.value = "");
+
       saveAll();
+      showStatus(`${id} Cleared`);
     }
 
     function clearAllData() {
-      if (!confirm("Clear EVERYTHING?")) return;
+      if (!confirm("This will clear ALL data in ALL tables. Names will also be removed. Continue?")) return;
       ['table1', 'table2', 'table3', 'table4'].forEach(id => {
-        document.getElementById(id + '-tbody').querySelectorAll('input').forEach(inp => { if(!inp.readOnly) inp.value = ""; });
+        const tbody = document.getElementById(id + '-tbody');
+        tbody.querySelectorAll('input').forEach(inp => { if(!inp.readOnly) inp.value = ""; });
+        const headers = document.querySelectorAll(`#${id} thead input.cell`);
+        headers.forEach(h => h.value = "");
       });
       saveAll();
     }
@@ -352,11 +351,9 @@
     function saveAll() {
       const get = id => [...document.getElementById(id+'-tbody').children].map(tr => [...tr.querySelectorAll('input')].map(td => td.value));
       const payload = {
-        leader: leaderParam,
-        class: classParam,
-        leaderName: document.getElementById('leaderName').value,
+        leader: document.getElementById('leaderName').value,
         section: document.getElementById('section').value,
-        groupNumber: document.getElementById('groupNumber').value,
+        group: document.getElementById('groupNumber').value,
         table1: get('table1'),
         table2: get('table2'),
         table3: get('table3'),
@@ -372,17 +369,19 @@
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify(data)
+          mode: 'no-cors',
+          body: JSON.stringify({
+            class: classParam, leader: leaderParam,
+            leaderName: data.leader, section: data.section, groupNumber: data.group,
+            table1: data.table1, table2: data.table2, table3: data.table3,
+            table4: data.table4, table5: data.table5
+          })
         });
-        showStatus("Cloud Sync Success!");
-      } catch (e) { showStatus("Saved (Cloud Pending)"); }
+        showStatus("Sync Success!");
+      } catch (e) { showStatus("Sync Error"); }
     }
 
-    function showStatus(m) { 
-      statusDiv.textContent = m; 
-      statusDiv.style.opacity = 1; 
-      setTimeout(() => statusDiv.style.opacity = 0, 3000); 
-    }
+    function showStatus(m) { statusDiv.textContent = m; statusDiv.style.opacity = 1; setTimeout(() => statusDiv.style.opacity = 0, 2000); }
 
     document.getElementById('saveBtn').onclick = saveAll;
     document.getElementById('syncBtn').onclick = saveAll;

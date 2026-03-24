@@ -178,3 +178,8 @@ Class 6
 Leader 5
 URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=5
 Password: crocodile
+
+
+
+Nandito ang instructions paano gamitin: 
+https://github.com/cityofsmiles/math-recorder
