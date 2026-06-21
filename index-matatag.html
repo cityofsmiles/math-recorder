@@ -144,8 +144,7 @@
               <th>Quiz Total</th>
               <th>Recitation</th>
               <th>Lessons</th>
-              <th>Summative 1</th>
-              <th>Summative 2</th>
+              <th>Summative</th>
             </tr>
           </thead>
           <tbody id="table3-tbody"></tbody>
@@ -164,7 +163,7 @@
           <thead>
             <tr>
               <th>Last Name</th><th>First Name</th>
-              <script>for(let i=1; i<=60; i++) document.write('<th>'+i+'</th>');</script>
+              <script>for(let i=1; i<=45; i++) document.write('<th>'+i+'</th>');</script>
               <th>Total</th>
             </tr>
           </thead>
@@ -184,7 +183,8 @@
           <thead>
             <tr>
               <th>Last Name</th><th>First Name</th>
-              <th>Activity</th><th>Quiz</th><th>Recitation</th><th>Lessons</th><th>Flashcards</th><th>Practice</th><th>Summative 1</th><th>Summative 2</th>
+              <th>Activity</th><th>Practice</th><th>Quiz</th>
+              <th>Recitation</th><th>Lessons</th><th>Summative</th><th>Flashcards</th>
             </tr>
           </thead>
           <tbody id="table5-tbody"></tbody>
@@ -240,7 +240,7 @@
     const classParam = urlParams.get('class');
     const leaderParam = urlParams.get('leader');
     const leaderKey = `${classParam}-${leaderParam}`;
-    const STORAGE_KEY = `math_v17_${leaderKey}`;
+    const STORAGE_KEY = `math_v16_${leaderKey}`;
 
     const loginOverlay = document.getElementById('loginOverlay');
     const mainContent = document.getElementById('mainContent');
@@ -295,9 +295,9 @@
 
       renderTable('table1', 38, data.table1, [37]);
       renderTable('table2', 38, data.table2, [37]);
-      renderTable('table3', 17, data.table3, [12]);
-      renderTable('table4', 63, data.table4, [62]);
-      renderTable('table5', 10, data.table5, [0,1,2,3,4,5,6,7,8,9]);
+      renderTable('table3', 16, data.table3, [12]);
+      renderTable('table4', 48, data.table4, [47]);
+      renderTable('table5', 9, data.table5, [0,1,2,3,4,5,6,7,8]);
 
       setupFormulas();
     }
@@ -332,30 +332,24 @@
         const calculate = () => {
           [t2, t3, t4, t5].forEach(t => { t[0].value = t1[0].value; t[1].value = t1[1].value; });
 
-          let s1 = 0;
-          for (let j = 2; j <= 36; j++) s1 += parseFloat(t1[j].value) || 0;
-          t1[37].value = s1;
-
-          let s2 = 0;
-          for (let j = 2; j <= 36; j++) s2 += parseFloat(t2[j].value) || 0;
-          t2[37].value = s2;
+          let s1 = 0, s2 = 0;
+          for (let j = 2; j <= 36; j++) {
+            s1 += parseFloat(t1[j].value) || 0;
+            s2 += parseFloat(t2[j].value) || 0;
+          }
+          t1[37].value = s1; t5[2].value = s1;
+          t2[37].value = s2; t5[3].value = s2;
 
           let s3 = 0;
           for (let j = 2; j <= 11; j++) s3 += parseFloat(t3[j].value) || 0;
-          t3[12].value = s3;
+          t3[12].value = s3; t5[4].value = s3;
+          t5[5].value = t3[13].value;
+          t5[6].value = t3[14].value;
+          t5[7].value = t3[15].value;
 
           let s4 = 0;
-          for (let j = 2; j <= 61; j++) s4 += parseFloat(t4[j].value) || 0;
-          t4[62].value = s4;
-
-          t5[2].value = s1;
-          t5[3].value = s3;
-          t5[4].value = t3[13].value;
-          t5[5].value = t3[14].value;
-          t5[6].value = s4;
-          t5[7].value = s2;
-          t5[8].value = t3[15].value;
-          t5[9].value = t3[16].value;
+          for (let j = 2; j <= 46; j++) s4 += parseFloat(t4[j].value) || 0;
+          t4[47].value = s4; t5[8].value = s4;
         };
 
         [t1, t2, t3, t4].forEach(t => t.forEach(inp => inp.oninput = calculate));
