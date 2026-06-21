@@ -1,4 +1,4 @@
-Here are the default passwords for the 30 leaders in all my class. Change them to 8-10 letter safe words such as names of places, animals, fruits, or vegetables. Change only the passwords, don't edit anything else. 
+Here are the default passwords for the 50 leaders in all my class. Change them to 8-10 letter safe words such as names of places, animals, fruits, or vegetables. Change only the passwords, don't edit anything else. 
 
 
       '1-1': 'password11',
@@ -31,7 +31,30 @@ Here are the default passwords for the 30 leaders in all my class. Change them t
       '6-3': 'password63',
       '6-4': 'password64',
       '6-5': 'password65'
-      
+'7-1': 'password71',
+'7-2': 'password72',
+'7-3': 'password73',
+'7-4': 'password74',
+'7-5': 'password75',
+
+'8-1': 'password81',
+'8-2': 'password82',
+'8-3': 'password83',
+'8-4': 'password84',
+'8-5': 'password85',
+
+'9-1': 'password91',
+'9-2': 'password92',
+'9-3': 'password93',
+'9-4': 'password94',
+'9-5': 'password95',
+
+'10-1': 'password101',
+'10-2': 'password102',
+'10-3': 'password103',
+'10-4': 'password104',
+'10-5': 'password105'
+
 Class 1
 Leader 1
 URL: https://cityofsmiles.github.io/math-recorder/?class=1&leader=1
@@ -181,3 +204,104 @@ Class 6
 Leader 5
 URL: https://cityofsmiles.github.io/math-recorder/?class=6&leader=5
 Password: password65
+
+Leader 1
+Class 7
+URL: https://cityofsmiles.github.io/math-recorder/?class=7&leader=1
+Password: password71
+
+Leader 2
+Class 7
+URL: https://cityofsmiles.github.io/math-recorder/?class=7&leader=2
+Password: password72
+
+Leader 3
+Class 7
+URL: https://cityofsmiles.github.io/math-recorder/?class=7&leader=3
+Password: password73
+
+Leader 4
+Class 7
+URL: https://cityofsmiles.github.io/math-recorder/?class=7&leader=4
+Password: password74
+
+Leader 5
+Class 7
+URL: https://cityofsmiles.github.io/math-recorder/?class=7&leader=5
+Password: password75
+
+Leader 1
+Class 8
+URL: https://cityofsmiles.github.io/math-recorder/?class=8&leader=1
+Password: password81
+
+Leader 2
+Class 8
+URL: https://cityofsmiles.github.io/math-recorder/?class=8&leader=2
+Password: password82
+
+Leader 3
+Class 8
+URL: https://cityofsmiles.github.io/math-recorder/?class=8&leader=3
+Password: password83
+
+Leader 4
+Class 8
+URL: https://cityofsmiles.github.io/math-recorder/?class=8&leader=4
+Password: password84
+
+Leader 5
+Class 8
+URL: https://cityofsmiles.github.io/math-recorder/?class=8&leader=5
+Password: password85
+
+Leader 1
+Class 9
+URL: https://cityofsmiles.github.io/math-recorder/?class=9&leader=1
+Password: password91
+
+Leader 2
+Class 9
+URL: https://cityofsmiles.github.io/math-recorder/?class=9&leader=2
+Password: password92
+
+Leader 3
+Class 9
+URL: https://cityofsmiles.github.io/math-recorder/?class=9&leader=3
+Password: password93
+
+Leader 4
+Class 9
+URL: https://cityofsmiles.github.io/math-recorder/?class=9&leader=4
+Password: password94
+
+Leader 5
+Class 9
+URL: https://cityofsmiles.github.io/math-recorder/?class=9&leader=5
+Password: password95
+
+
+Leader 1
+Class 10
+URL: https://cityofsmiles.github.io/math-recorder/?class=10&leader=1
+Password: password101
+
+Leader 2
+Class 10
+URL: https://cityofsmiles.github.io/math-recorder/?class=10&leader=2
+Password: password102
+
+Leader 3
+Class 10
+URL: https://cityofsmiles.github.io/math-recorder/?class=10&leader=3
+Password: password103
+
+Leader 4
+Class 10
+URL: https://cityofsmiles.github.io/math-recorder/?class=10&leader=4
+Password: password104
+
+Leader 5
+Class 10
+URL: https://cityofsmiles.github.io/math-recorder/?class=10&leader=5
+Password: password105
